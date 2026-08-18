@@ -158,3 +158,92 @@ export const ChangePasswordService = {
     return response.data;
   }
 };
+
+export const EmailSettingsService = {
+  getSettings: async () => {
+    const response = await apiClient.get(ENDPOINTS.system.emailSettings);
+    return response.data;
+  },
+
+  updateSettings: async (payload) => {
+    const response = await apiClient.put(ENDPOINTS.system.emailSettings, payload);
+    return response.data;
+  },
+
+  sendTestEmail: async (to_email) => {
+    await apiClient.post(ENDPOINTS.system.emailTest, { to_email });
+  }
+};
+
+export const GroupService = {
+  getGroupList: async () => {
+    const response = await apiClient.get(ENDPOINTS.groups.list);
+    return response.data;
+  },
+  getGroupById: async (groupId: string | number) => {
+    const response = await apiClient.get(ENDPOINTS.groups.detail(groupId));
+    return response.data;
+  },
+  createGroup: async (payload: {
+    name: string;
+    description?: string;
+    permissions: Record<string, string[]>;
+  }) => {
+    const response = await apiClient.post(ENDPOINTS.groups.create, payload);
+    return response.data;
+  },
+  updateGroup: async (groupId: string | number, payload: {
+    name?: string;
+    description?: string;
+    permissions?: Record<string, string[]>;
+  }) => {
+    const response = await apiClient.patch(ENDPOINTS.groups.update(groupId), payload);
+    return response.data;
+  },
+  deleteGroup: async (groupId: string | number) => {
+    const response = await apiClient.delete(ENDPOINTS.groups.delete(groupId));
+    return response.data;
+  },
+  addMembers: async (groupId: string | number, userIds: string[]) => {
+    const response = await apiClient.post(ENDPOINTS.groups.addMembers(groupId), { user_ids: userIds });
+    return response.data;
+  },
+  removeMember: async (groupId: string | number, userId: string | number) => {
+    const response = await apiClient.delete(ENDPOINTS.groups.removeMember(groupId, userId));
+    return response.data;
+  },
+};
+
+export const IngestionService = {
+  getSources: async () => {
+    const response = await apiClient.get(ENDPOINTS.ingestion.sources);
+    return response.data; // ← returns the array
+  },
+
+  createSource: async (data: any) => {
+    const response = await apiClient.post(ENDPOINTS.ingestion.sources, data);
+    return response.data;
+  },
+
+  updateSource: async (id: string | number, data: any) => {
+    const response = await apiClient.put(ENDPOINTS.ingestion.sourceDetail(id), data);
+    return response.data;
+  },
+
+  deleteSource: async (id: string | number) => {
+    const response = await apiClient.delete(ENDPOINTS.ingestion.sourceDetail(id));
+    return response.data;
+  },
+
+  triggerIngestion: async (sourceId: string | number) => {
+    const response = await apiClient.post(ENDPOINTS.ingestion.trigger(sourceId));
+    return response.data;
+  },
+
+  getCleanedData: async (sourceId: string | number, limit = 50, offset = 0) => {
+    const response = await apiClient.get(ENDPOINTS.ingestion.data(sourceId), {
+      params: { limit, offset },
+    });
+    return response.data; // ← returns the cleaned data array
+  },
+};

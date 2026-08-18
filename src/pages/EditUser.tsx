@@ -298,6 +298,32 @@ export default function EditUser() {
               value={user.locked_until ? formatDate(user.locked_until) : "N/A"}
               highlight={!!user.locked_until}
             />
+            <hr className="border-slate-100 dark:border-slate-800" />
+            <div>
+              <span className="text-slate-500 text-sm">Groups</span>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {(user.group_names || []).length === 0 ? (
+                  <span className="text-slate-400 text-xs">
+                    Not in any group —{" "}
+                    <button
+                      onClick={() => navigate("/groups")}
+                      className="text-blue-600 hover:underline"
+                    >
+                      assign one
+                    </button>
+                  </span>
+                ) : (
+                  user.group_names.map((name: string) => (
+                    <span
+                      key={name}
+                      className="px-2 py-0.5 text-[11px] rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                    >
+                      {name}
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -355,6 +381,22 @@ export default function EditUser() {
                     </div>
 
                     <div className="overflow-y-auto pr-2 custom-scrollbar flex-grow">
+                      {/* Group note */}
+                      <p className="text-xs text-slate-500 mb-4">
+                        These are this user's <strong>direct</strong> permissions. They
+                        also inherit permissions from any{" "}
+                        <button
+                          onClick={() => navigate("/groups")}
+                          className="text-blue-600 hover:underline"
+                        >
+                          groups
+                        </button>{" "}
+                        they belong to
+                        {user.group_names?.length
+                          ? `: ${user.group_names.join(", ")}`
+                          : "."}
+                      </p>
+
                       {/* Toggle Active Status */}
                       <div className="flex items-center justify-between p-4 mb-4 border rounded-xl dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                         <span className="font-bold dark:text-white">

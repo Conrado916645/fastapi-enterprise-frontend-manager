@@ -11,6 +11,8 @@ type ApiUser = {
   last_login_at: string;
   requires_password_change: boolean;
   locked_until: string | null;
+  group_names?: string[];
+  effective_permissions?: Record<string, string[]>;
 };
 
 export default function UserList() {
@@ -91,6 +93,7 @@ export default function UserList() {
             <thead className="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="p-4">Username</th>
+                <th className="p-4 hidden md:table-cell">Groups</th>
                 <th className="p-4 hidden md:table-cell">Last Login</th>
                 <th className="p-4">Status</th>
                 <th className="p-4 text-right">Actions</th>
@@ -100,6 +103,22 @@ export default function UserList() {
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
                   <td className="p-4 font-semibold">@{user.username}</td>
+                  <td className="p-4 hidden md:table-cell">
+                    <div className="flex flex-wrap gap-1 max-w-[200px]">
+                      {(user.group_names || []).length === 0 ? (
+                        <span className="text-slate-400 text-xs">—</span>
+                      ) : (
+                        user.group_names!.map((name) => (
+                          <span
+                            key={name}
+                            className="px-2 py-0.5 text-[11px] rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                          >
+                            {name}
+                          </span>
+                        ))
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4 hidden md:table-cell text-slate-500">{user.last_login_at || 'Never'}</td>
                   <td className="p-4">
                     {user.locked_until ? (

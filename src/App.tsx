@@ -10,8 +10,10 @@ import Home from "./pages/Home";
 import UserList from "./pages/UserList";
 import Register from "./pages/Register";
 import EditUser from "./pages/EditUser";
+import GroupList from "./pages/GroupList";
 import NotFound from "./NotFound";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings/index";
 
 // Import the Modal
 import ChangePasswordModal from "./components/ChangePasswordModel";
@@ -92,7 +94,9 @@ export default function App() {
             <Route path="/users" element={<UserList />} />
             <Route path="/users/register" element={<Register />} />
             <Route path="/users/edit/:id" element={<EditUser />} />
+            <Route path="/groups" element={<GroupList />} />
             <Route path="/me" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

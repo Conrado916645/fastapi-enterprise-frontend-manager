@@ -32,6 +32,23 @@ export const ENDPOINTS = {
     health: '/health',
     auditLogs: '/audit-logs',
     dashboard: '/system/dashboard',
-    installedApps: '/system/installed-apps'
-  }
+    installedApps: '/system/installed-apps',
+    emailSettings: '/system/email-settings',
+    emailTest: '/system/email-settings/test'
+  }, 
+  ingestion: {
+  sources: '/sources/',
+  sourceDetail: (id) => `/sources/${id}`,
+  trigger: (id) => `/ingestion/trigger/${id}`,
+  data: (sourceId) => `/data/${sourceId}`,
+},
+  groups: {
+    list: '/groups',
+    create: '/groups',
+    detail: (id: string | number) => `/groups/${id}`,
+    update: (id: string | number) => `/groups/${id}`,
+    delete: (id: string | number) => `/groups/${id}`,
+    addMembers: (id: string | number) => `/groups/${id}/members`,
+    removeMember: (id: string | number, userId: string | number) => `/groups/${id}/members/${userId}`,
+  },
 } as const;
