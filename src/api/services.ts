@@ -175,6 +175,24 @@ export const EmailSettingsService = {
   }
 };
 
+export const AISettingsService = {
+  getSettings: async () => {
+    const response = await apiClient.get(ENDPOINTS.system.aiSettings);
+    return response.data;
+  },
+
+  updateSettings: async (payload: {
+    is_enabled: boolean;
+    provider?: string;
+    model_name?: string;
+    api_key?: string;
+    custom_prompt?: string;
+  }) => {
+    const response = await apiClient.patch(ENDPOINTS.system.aiSettings, payload);
+    return response.data;
+  },
+};
+
 export const GroupService = {
   getGroupList: async () => {
     const response = await apiClient.get(ENDPOINTS.groups.list);

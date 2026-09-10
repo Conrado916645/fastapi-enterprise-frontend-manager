@@ -1,5 +1,6 @@
 import { useState } from "react";
 import EmailSettings from "./EmailSettings";
+import AISettings from "./AISettings";
 import SourceList from "../../components/Ingestion/SourceList";
 import DataViewer from "../../components/Ingestion/DataViewer";
 
@@ -34,12 +35,23 @@ export default function Settings() {
           >
             API Ingestion
           </button>
+          <button
+            onClick={() => setActiveTab("ai")}
+            className={`py-2 px-4 text-sm font-medium border-b-2 ${
+              activeTab === "ai"
+                ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
+            }`}
+          >
+            AI Settings
+          </button>
         </nav>
       </div>
 
       {/* Tab Content – flex-1 to fill remaining vertical space */}
       <div className="flex-1">
         {activeTab === "email" && <EmailSettings />}
+        {activeTab === "ai" && <AISettings />}
         {activeTab === "ingestion" && (
           <div className="h-full">
             <SourceList onViewData={setViewSourceId} />

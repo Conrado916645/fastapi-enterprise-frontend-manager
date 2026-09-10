@@ -34,8 +34,9 @@ export const ENDPOINTS = {
     dashboard: '/system/dashboard',
     installedApps: '/system/installed-apps',
     emailSettings: '/system/email-settings',
-    emailTest: '/system/email-settings/test'
-  }, 
+    emailTest: '/system/email-settings/test',
+    aiSettings: '/system/ai-settings',
+  },
   ingestion: {
   sources: '/sources/',
   sourceDetail: (id) => `/sources/${id}`,

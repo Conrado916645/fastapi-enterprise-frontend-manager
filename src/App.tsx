@@ -126,7 +126,14 @@ export default function App() {
               }
             />
             <Route path="/me" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/settings"
+              element={
+                <RequirePermission module="system" action="read">
+                  <Settings />
+                </RequirePermission>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
