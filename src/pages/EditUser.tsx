@@ -222,7 +222,7 @@ export default function EditUser() {
   const formatDate = (date: string) => new Date(date).toLocaleString();
 
   return (
-    <div className="max-w-6xl mx-auto p-8 animate-fade-in">
+    <div className="max-w-6xl mx-auto animate-fade-in">
       <button
         onClick={() => navigate("/users")}
         className="flex items-center gap-2 text-slate-500 mb-8 hover:text-blue-600 transition-colors"
@@ -261,7 +261,7 @@ export default function EditUser() {
           ))}
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 h-fit">
           <h2 className="font-bold mb-6 flex items-center gap-2 dark:text-white">
             <History size={20} /> System Audit Rail
           </h2>
@@ -337,9 +337,9 @@ export default function EditUser() {
 
       {/* MODALS */}
       {modalType && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
           <div
-            className={`bg-white dark:bg-slate-900 w-full ${modalType === "permissions" ? "max-w-2xl" : "max-w-md"} rounded-2xl p-6 shadow-2xl border dark:border-slate-800 flex flex-col max-h-[90vh]`}
+            className={`bg-white dark:bg-slate-900 w-full ${modalType === "permissions" ? "max-w-2xl" : "max-w-md"} rounded-lg p-6 border dark:border-slate-800 flex flex-col max-h-[90vh]`}
           >
             <div className="flex justify-between items-center mb-6 shrink-0">
               <h2 className="text-xl font-bold dark:text-white capitalize">
@@ -365,14 +365,14 @@ export default function EditUser() {
                   type="password"
                   placeholder="New Password"
                   value={password}
-                  className="w-full p-3 border rounded-xl dark:bg-slate-800 outline-none focus:border-blue-500 transition-colors"
+                  className="w-full p-3 border rounded-lg dark:bg-slate-800 outline-none focus:border-blue-500 transition-colors"
                   onChange={(e) => setPassword(e.target.value)}
                 />
               )}
 
               {modalType === "permissions" && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                  <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl p-6 shadow-2xl border dark:border-slate-800 flex flex-col max-h-[90vh]">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
+                  <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-lg p-6 border dark:border-slate-800 flex flex-col max-h-[90vh]">
                     <div className="flex justify-between items-center mb-6 shrink-0">
                       <h2 className="text-xl font-bold dark:text-white capitalize">
                         Access Control Management
@@ -405,7 +405,7 @@ export default function EditUser() {
                       </p>
 
                       {/* Toggle Active Status */}
-                      <div className="flex items-center justify-between p-4 mb-4 border rounded-xl dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                      <div className="flex items-center justify-between p-4 mb-4 border rounded-lg dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                         <span className="font-bold dark:text-white">
                           Account Status: {active ? "Active" : "Disabled"}
                         </span>
@@ -428,7 +428,7 @@ export default function EditUser() {
                           placeholder="Search applications..."
                           value={appSearch}
                           onChange={(e) => setAppSearch(e.target.value)}
-                          className="w-full pl-10 p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 transition-colors dark:text-white"
+                          className="w-full pl-10 p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm outline-none focus:border-blue-500 transition-colors dark:text-white"
                         />
                       </div>
 
@@ -442,7 +442,7 @@ export default function EditUser() {
                           filteredApps.map(([app, actions]) => (
                             <div
                               key={app}
-                              className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                              className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                             >
                               <h4 className="font-bold text-slate-800 dark:text-white capitalize w-32 shrink-0">
                                 {app}
@@ -461,7 +461,7 @@ export default function EditUser() {
                                       }
                                       className={`px-3 py-1 text-xs rounded-full border transition-all ${
                                         isSelected
-                                          ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                                          ? "bg-blue-600 text-white border-blue-600"
                                           : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-400"
                                       }`}
                                     >
@@ -480,7 +480,7 @@ export default function EditUser() {
                     <button
                       onClick={handleAction}
                       disabled={loading}
-                      className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                      className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                     >
                       {loading ? (
                         <Loader2 className="animate-spin" />
@@ -497,7 +497,7 @@ export default function EditUser() {
               {modalType === "apikey" && (
                 <div className="space-y-4">
                   {generatedKey ? (
-                    <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-dashed">
+                    <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg border border-dashed">
                       <code className="text-sm break-all dark:text-white">
                         {generatedKey}
                       </code>
@@ -518,7 +518,7 @@ export default function EditUser() {
                   </p>
                   <input
                     type="text"
-                    className="w-full p-3 border rounded-xl dark:bg-slate-800 outline-none focus:border-red-500 transition-colors"
+                    className="w-full p-3 border rounded-lg dark:bg-slate-800 outline-none focus:border-red-500 transition-colors"
                     onChange={(e) => setDeleteConfirmId(e.target.value)}
                   />
                 </div>
@@ -533,7 +533,7 @@ export default function EditUser() {
 
             <button
               onClick={handleAction}
-              className={`w-full mt-6 shrink-0 py-3 rounded-xl font-bold ${modalType === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"} text-white flex items-center justify-center gap-2 transition-colors`}
+              className={`w-full mt-6 shrink-0 py-3 rounded-lg font-bold ${modalType === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"} text-white flex items-center justify-center gap-2 transition-colors`}
               disabled={
                 loading ||
                 (modalType === "delete" && deleteConfirmId !== user.id) ||
@@ -558,7 +558,7 @@ export default function EditUser() {
 function ActionCard({ title, desc, icon, onClick }: any) {
   return (
     <div
-      className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-blue-500 transition-colors cursor-pointer"
+      className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-colors cursor-pointer"
       onClick={onClick}
     >
       <div className="mb-4">{icon}</div>

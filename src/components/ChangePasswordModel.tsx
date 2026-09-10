@@ -42,10 +42,10 @@ export default function ChangePasswordModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 p-8 rounded-2xl w-full max-w-sm shadow-2xl border dark:border-slate-800"
+        className="bg-white dark:bg-slate-900 p-8 rounded-lg w-full max-w-sm border border-slate-200 dark:border-slate-800"
       >
         <h2 className="text-xl font-bold mb-2 dark:text-white">
           Security Update Required

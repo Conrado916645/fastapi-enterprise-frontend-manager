@@ -1,11 +1,19 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Search, Loader2, AlertCircle } from "lucide-react";
+import { ArrowRight, Search, Loader2, AlertCircle, UsersRound } from "lucide-react";
 import {
   UserRegistrationService,
   InstalledAppsService,
+  GroupService,
 } from "../api/services";
 import { notify } from "../utils/toast";
+
+type ApiGroup = {
+  id: string;
+  name: string;
+  description: string | null;
+  permissions: Record<string, string[]>;
+};
 
 export default function Register() {
   const navigate = useNavigate();
@@ -21,6 +29,9 @@ export default function Register() {
     Record<string, string[]>
   >({});
 
+  const [groups, setGroups] = useState<ApiGroup[]>([]);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -30,10 +41,14 @@ export default function Register() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    InstalledAppsService.getInstalledApps()
-      .then((res: any) => {
-        const apps = res?.installed_apps ?? res ?? {};
+    Promise.all([
+      InstalledAppsService.getInstalledApps(),
+      GroupService.getGroupList().catch(() => []),
+    ])
+      .then(([appsRes, groupsRes]: [any, any]) => {
+        const apps = appsRes?.installed_apps ?? appsRes ?? {};
         setAvailableApps(apps);
+        setGroups(groupsRes || []);
       })
       .catch((err) => {
         console.error("Failed to load apps:", err);
@@ -41,6 +56,12 @@ export default function Register() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const toggleGroup = (groupId: string) => {
+    setSelectedGroupIds((prev) =>
+      prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]
+    );
+  };
 
   const filteredApps = useMemo(() => {
     return Object.entries(availableApps).filter(([app]) =>
@@ -91,6 +112,7 @@ export default function Register() {
         password: formData.password,
         confirm_password: formData.confirm_password,
         permissions,
+        group_ids: selectedGroupIds,
       });
       notify.success("User has been registered.")
       navigate("/users");
@@ -103,14 +125,14 @@ export default function Register() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-[#0A0F1D]">
+      <div className="flex h-full items-center justify-center">
         <Loader2 className="animate-spin text-blue-500" size={32} />
       </div>
     );
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 dark:bg-[#0A0F1D]">
-      <div className="w-full max-w-2xl bg-white dark:bg-[#111620] p-12 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
+    <div className="h-full flex items-center justify-center">
+      <div className="w-full max-w-2xl bg-white dark:bg-slate-900 p-12 rounded-lg border border-slate-200 dark:border-slate-800">
 
         <h1 className="text-3xl font-bold text-center mb-2">
           Account Registration
@@ -122,7 +144,7 @@ export default function Register() {
 
         {/* ERROR */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-sm flex items-center gap-2">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm flex items-center gap-2">
             <AlertCircle size={16} /> {error}
           </div>
         )}
@@ -131,7 +153,7 @@ export default function Register() {
         <div className="grid grid-cols-2 gap-6 mb-6">
           <input
             placeholder="Username"
-            className="col-span-2 p-3 bg-slate-50 dark:bg-[#0A0F1D] border rounded-xl"
+            className="col-span-2 p-3 bg-slate-50 dark:bg-slate-950 border rounded-lg"
             onChange={(e) =>
               setFormData({ ...formData, username: e.target.value })
             }
@@ -140,7 +162,7 @@ export default function Register() {
           <input
             type="password"
             placeholder="Password"
-            className="p-3 bg-slate-50 dark:bg-[#0A0F1D] border rounded-xl"
+            className="p-3 bg-slate-50 dark:bg-slate-950 border rounded-lg"
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
@@ -149,16 +171,53 @@ export default function Register() {
           <input
             type="password"
             placeholder="Confirm"
-            className="p-3 bg-slate-50 dark:bg-[#0A0F1D] border rounded-xl"
+            className="p-3 bg-slate-50 dark:bg-slate-950 border rounded-lg"
             onChange={(e) =>
               setFormData({ ...formData, confirm_password: e.target.value })
             }
           />
         </div>
 
+        {/* GROUPS */}
+        <div className="mb-6">
+          <h3 className="text-sm font-bold mb-3 flex items-center gap-2 text-slate-700 dark:text-slate-300">
+            <UsersRound size={16} /> Assign to Groups
+          </h3>
+          {groups.length === 0 ? (
+            <p className="text-xs text-slate-500">
+              No groups exist yet. Create one from the Groups page to make role assignment easier.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {groups.map((group) => {
+                const isSelected = selectedGroupIds.includes(group.id);
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    onClick={() => toggleGroup(group.id)}
+                    title={group.description || undefined}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-colors ${
+                      isSelected
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-slate-50 dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                    }`}
+                  >
+                    {group.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <p className="text-xs text-slate-500 mt-2">
+            The user inherits whatever permissions each group grants. Use the per-app checkboxes
+            below only for one-off overrides.
+          </p>
+        </div>
+
         {/* ASSIGNED ACCESS PREVIEW */}
         {Object.keys(permissions).length > 0 && (
-          <div className="mb-6 p-4 rounded-xl border border-blue-500/30 bg-blue-500/5">
+          <div className="mb-6 p-4 rounded-lg border border-blue-500/30 bg-blue-500/5">
             <h3 className="text-sm font-bold mb-2 text-blue-500">
               Assigned App Access
             </h3>
@@ -180,7 +239,7 @@ export default function Register() {
           <input
             placeholder="Search apps..."
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 p-2.5 border rounded-xl text-sm"
+            className="w-full pl-10 p-2.5 border rounded-lg text-sm"
           />
         </div>
 
@@ -189,10 +248,10 @@ export default function Register() {
           {filteredApps.map(([app, actions]) => (
             <div
               key={app}
-              className={`p-4 rounded-2xl border ${
+              className={`p-4 rounded-lg border ${
                 permissions[app]
                   ? "bg-blue-500/5 border-blue-500/30"
-                  : "bg-slate-50 dark:bg-[#0A0F1D] border-slate-200"
+                  : "bg-slate-50 dark:bg-slate-950 border-slate-200"
               }`}
             >
               <h4 className="font-bold capitalize text-sm mb-3">{app}</h4>
@@ -221,9 +280,9 @@ export default function Register() {
         <button
           onClick={handleRegister}
           disabled={isInvalid}
-          className={`w-full mt-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`w-full mt-6 py-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-all ${
             isInvalid
-              ? "bg-gray-400 cursor-not-allowed"
+              ? "bg-slate-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >

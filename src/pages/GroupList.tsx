@@ -94,7 +94,7 @@ export default function GroupList() {
       </header>
 
       {/* Toolbar */}
-      <section className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+      <section className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
         <div className="relative">
           <Search className="absolute left-3 top-3 text-slate-400" size={20} />
           <input
@@ -108,7 +108,7 @@ export default function GroupList() {
       </section>
 
       {/* Table */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <section className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
         {loading ? (
           <div className="p-10 text-center text-slate-500 animate-pulse">Loading groups...</div>
         ) : filteredGroups.length === 0 ? (
@@ -206,8 +206,8 @@ export default function GroupList() {
       )}
 
       {groupToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl p-6 shadow-2xl border dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-lg p-6 border dark:border-slate-800">
             <h2 className="text-lg font-bold mb-2 dark:text-white">Delete Group</h2>
             <p className="text-sm text-slate-500 mb-6">
               Delete <span className="font-semibold text-slate-800 dark:text-white">{groupToDelete.name}</span>?
@@ -216,14 +216,14 @@ export default function GroupList() {
             <div className="flex gap-3">
               <button
                 onClick={() => setGroupToDelete(null)}
-                className="flex-1 py-2.5 rounded-xl border dark:border-slate-700 dark:text-white font-medium"
+                className="flex-1 py-2.5 rounded-lg border dark:border-slate-700 dark:text-white font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={deleting}
-                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete"}
               </button>

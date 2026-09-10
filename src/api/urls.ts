@@ -6,8 +6,13 @@ export const ENDPOINTS = {
   auth: {
     login: '/auth/login',
     register: '/auth/register',
+    registrationStatus: '/auth/registration-status',
+    captchaStatus: '/auth/captcha-status',
+    captcha: '/auth/captcha',
     refreshToken: '/auth/refresh',
-    mfaVerify: '/auth/login/mfa-verify'
+    mfaVerify: '/auth/login/mfa-verify',
+    appInfo: '/auth/app-info',
+    emailStatus: '/auth/email-status'
   },
   users: {
     list: '/system/users/',
@@ -22,20 +27,27 @@ export const ENDPOINTS = {
     me: '/users/me',
     mfa: '/mfa/setup/totp',
     mfaVerify: '/mfa/verify/totp',
-    mfaDisable: '/mfa/disable'
+    mfaDisable: '/mfa/disable',
+    forgotPassword: '/users/forgot-password',
+    resetPassword: '/users/reset-password',
+    verifyEmail: '/users/verify-email',
+    sendVerificationEmail: '/users/me/send-verification-email'
   },
   apps: {
     config: '/apps/config',
     list: '/apps',
   },
   system: {
-    health: '/health',
+    health: '/system/health',
     auditLogs: '/audit-logs',
     dashboard: '/system/dashboard',
     installedApps: '/system/installed-apps',
     emailSettings: '/system/email-settings',
     emailTest: '/system/email-settings/test',
     aiSettings: '/system/ai-settings',
+    registrationSettings: '/system/registration-settings',
+    captchaSettings: '/system/captcha-settings',
+    generalSettings: '/system/general-settings',
   },
   ingestion: {
   sources: '/sources/',

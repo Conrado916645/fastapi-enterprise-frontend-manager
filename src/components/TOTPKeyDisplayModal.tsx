@@ -17,8 +17,8 @@ export default function TOTPKeyDisplayModal({ secretKey, qrCodeUrl, onClose }: T
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl w-full max-w-md shadow-2xl border dark:border-slate-800 flex flex-col relative">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-lg w-full max-w-md border border-slate-200 dark:border-slate-800 flex flex-col relative">
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6 shrink-0">
@@ -38,7 +38,7 @@ export default function TOTPKeyDisplayModal({ secretKey, qrCodeUrl, onClose }: T
         <div className="space-y-6">
           
           {/* Security Warning */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 p-4 rounded-xl flex gap-3 text-amber-800 dark:text-amber-400">
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 p-4 rounded-lg flex gap-3 text-amber-800 dark:text-amber-400">
             <AlertTriangle size={20} className="shrink-0 mt-0.5" />
             <p className="text-sm">
               Please save this key in a secure password manager. If you lose access to your authenticator app, you will need this key to recover your account.
@@ -47,7 +47,7 @@ export default function TOTPKeyDisplayModal({ secretKey, qrCodeUrl, onClose }: T
 
           {/* Optional QR Code */}
           {qrCodeUrl && (
-            <div className="flex justify-center bg-white p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 mx-auto w-fit">
+            <div className="flex justify-center bg-white p-4 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700 mx-auto w-fit">
               <img src={qrCodeUrl} alt="TOTP QR Code" className="w-40 h-40 object-contain" />
             </div>
           )}
@@ -57,13 +57,13 @@ export default function TOTPKeyDisplayModal({ secretKey, qrCodeUrl, onClose }: T
             <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
               Manual Setup Key
             </label>
-            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
               <code className="text-lg font-mono font-bold tracking-widest text-slate-900 dark:text-white break-all">
                 {secretKey}
               </code>
               <button 
                 onClick={copyToClipboard}
-                className="ml-4 p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 text-slate-500 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors shrink-0"
+                className="ml-4 p-2 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 transition-colors shrink-0"
                 title="Copy to clipboard"
               >
                 {copied ? <CheckCircle2 size={20} className="text-emerald-500" /> : <Copy size={20} />}
@@ -73,7 +73,7 @@ export default function TOTPKeyDisplayModal({ secretKey, qrCodeUrl, onClose }: T
 
           <button 
             onClick={onClose} 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-colors"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-lg font-bold transition-colors"
           >
             I Have Saved My Key
           </button>

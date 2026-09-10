@@ -63,31 +63,31 @@ const fetchSources = async () => {
         <h2 className="text-xl font-semibold dark:text-white">API Sources</h2>
         <button
           onClick={openAdd}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
         >
           Add Source
         </button>
       </div>
-      <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-lg shadow">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-          <thead className="bg-gray-50 dark:bg-slate-700">
+      <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead className="bg-slate-50 dark:bg-slate-700">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Endpoint</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Method</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase">Endpoint</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase">Method</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-300 uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
             {sources.map((src) => (
-              <tr key={src.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+              <tr key={src.id} className="hover:bg-slate-50 dark:hover:bg-slate-700">
                 <td className="px-4 py-3 text-sm dark:text-white">{src.name}</td>
                 <td className="px-4 py-3 text-sm dark:text-white truncate max-w-xs">{src.endpoint}</td>
                 <td className="px-4 py-3 text-sm dark:text-white">{src.method}</td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => openEdit(src)}
-                    className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 mr-2"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 mr-2"
                   >
                     Edit
                   </button>

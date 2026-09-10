@@ -6,22 +6,31 @@ import "react-toastify/dist/ReactToastify.css";
 // Import Layout & Pages
 import DashboardLayout from "./layouts/DashboardLayout";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import UserList from "./pages/UserList";
 import Register from "./pages/Register";
 import EditUser from "./pages/EditUser";
 import GroupList from "./pages/GroupList";
 import NotFound from "./NotFound";
+import Unauthorized from "./pages/Unauthorized";
+import PendingApproval from "./pages/PendingApproval";
+import BackendOffline from "./pages/BackendOffline";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings/index";
 
 // Import the Modal
 import ChangePasswordModal from "./components/ChangePasswordModel";
 import RequirePermission from "./components/RequirePermission";
+import RequireAuth from "./components/RequireAuth";
 import { AuthProvider } from "./context/AuthContext";
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
+  const [backendOffline, setBackendOffline] = useState(false);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
@@ -44,11 +53,22 @@ export default function App() {
     const handleEvent = () => setShowModal(true);
     window.addEventListener("REQUIRE_PASSWORD_CHANGE", handleEvent);
 
-    return () =>
+    // Listener for the global "Backend Unreachable" event (dispatched by the
+    // axios interceptor whenever a request gets no response at all)
+    const handleOffline = () => setBackendOffline(true);
+    window.addEventListener("BACKEND_OFFLINE", handleOffline);
+
+    return () => {
       window.removeEventListener("REQUIRE_PASSWORD_CHANGE", handleEvent);
+      window.removeEventListener("BACKEND_OFFLINE", handleOffline);
+    };
   }, [isDarkMode]);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  if (backendOffline) {
+    return <BackendOffline onRetry={() => window.location.reload()} />;
+  }
 
   return (
     <AuthProvider>
@@ -69,7 +89,7 @@ export default function App() {
                 <div className="absolute top-4 right-4">
                   <button
                     onClick={toggleTheme}
-                    className="p-3 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:scale-105 transition-all"
+                    className="p-3 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
                   >
                     {isDarkMode ? (
                       <span className="text-sm font-bold">Light Mode</span>
@@ -82,6 +102,12 @@ export default function App() {
               </div>
             }
           />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/pending-approval" element={<PendingApproval />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
           {/* Protected Routes */}
           <Route
@@ -92,7 +118,14 @@ export default function App() {
               />
             }
           >
-            <Route path="/home" element={<Home />} />
+            <Route
+              path="/home"
+              element={
+                <RequireAuth>
+                  <Home />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/users"
               element={
@@ -125,7 +158,14 @@ export default function App() {
                 </RequirePermission>
               }
             />
-            <Route path="/me" element={<Profile />} />
+            <Route
+              path="/me"
+              element={
+                <RequireAuth>
+                  <Profile />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/settings"
               element={

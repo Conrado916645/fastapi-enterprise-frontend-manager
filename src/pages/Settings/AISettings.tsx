@@ -7,6 +7,7 @@ export default function AISettings() {
     is_enabled: false,
     provider: "anthropic",
     model_name: "",
+    base_url: "",
     api_key: "",
     custom_prompt: "",
   });
@@ -24,6 +25,7 @@ export default function AISettings() {
         is_enabled: data.is_enabled ?? false,
         provider: data.provider || "anthropic",
         model_name: data.model_name || "",
+        base_url: data.base_url || "",
         api_key: "",
         custom_prompt: data.custom_prompt || "",
       });
@@ -59,11 +61,13 @@ export default function AISettings() {
     }
   };
 
+  const isLocal = settings.provider === "local";
+
   return (
     <div>
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 bg-white dark:bg-slate-800 p-6 rounded-lg shadow"
+        className="space-y-5 bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700"
       >
         {/* Enable / Disable toggle */}
         <div className="flex items-center gap-3">
@@ -75,32 +79,59 @@ export default function AISettings() {
               onChange={handleChange}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
           </label>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-300">
+          <span className="text-sm font-medium text-slate-900 dark:text-slate-300">
             Enable AI Integration
           </span>
         </div>
 
         {/* Provider */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Provider
           </label>
           <select
             name="provider"
             value={settings.provider}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           >
             <option value="anthropic">Anthropic</option>
             <option value="openai">OpenAI</option>
+            <option value="local">Local / Self-hosted</option>
           </select>
+          {isLocal && (
+            <p className="text-xs text-slate-500 mt-1">
+              Any server that speaks the OpenAI-compatible API — Ollama, LM Studio, vLLM, llama.cpp, etc.
+            </p>
+          )}
         </div>
+
+        {/* Base URL — only needed for a local/self-hosted server */}
+        {isLocal && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              Base URL
+            </label>
+            <input
+              type="text"
+              name="base_url"
+              value={settings.base_url}
+              onChange={handleChange}
+              placeholder="http://localhost:11434/v1"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            />
+            <p className="text-xs text-slate-500 mt-1">
+              The endpoint of your local model server, e.g. Ollama's default at{" "}
+              <code>http://localhost:11434/v1</code>.
+            </p>
+          </div>
+        )}
 
         {/* Model */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Model
           </label>
           <input
@@ -108,33 +139,47 @@ export default function AISettings() {
             name="model_name"
             value={settings.model_name}
             onChange={handleChange}
-            placeholder="claude-sonnet-5"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            placeholder={isLocal ? "llama3.1" : "claude-sonnet-5"}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
+          {isLocal && (
+            <p className="text-xs text-slate-500 mt-1">
+              The model name as your local server expects it, e.g. <code>llama3.1</code> or <code>mistral</code>.
+            </p>
+          )}
         </div>
 
         {/* API Key */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            API Token {hasApiKeySet && <span className="text-emerald-600 text-xs font-normal">(currently set)</span>}
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            API Token {isLocal && <span className="text-slate-400 font-normal">(optional)</span>}{" "}
+            {hasApiKeySet && <span className="text-emerald-600 text-xs font-normal">(currently set)</span>}
           </label>
           <input
             type="password"
             name="api_key"
             value={settings.api_key}
             onChange={handleChange}
-            placeholder={hasApiKeySet ? "Leave blank to keep existing token" : "sk-..."}
+            placeholder={
+              hasApiKeySet
+                ? "Leave blank to keep existing token"
+                : isLocal
+                  ? "Leave blank if your local server doesn't require one"
+                  : "sk-..."
+            }
             autoComplete="off"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
           <p className="text-xs text-slate-500 mt-1">
-            Stored encrypted server-side. Never shown again after saving.
+            {isLocal
+              ? "Most local servers don't require one, but it's stored encrypted server-side if you set it."
+              : "Stored encrypted server-side. Never shown again after saving."}
           </p>
         </div>
 
         {/* Custom Prompt */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Custom Prompt
           </label>
           <textarea
@@ -143,7 +188,7 @@ export default function AISettings() {
             onChange={handleChange}
             rows={5}
             placeholder="Optional system prompt / instructions to send with every request..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600 resize-y"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600 resize-y"
           />
           <p className="text-xs text-slate-500 mt-1">
             Fill this in only if the feature needs a custom prompt — leave blank to use the default.
@@ -153,7 +198,7 @@ export default function AISettings() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save Settings"}
         </button>

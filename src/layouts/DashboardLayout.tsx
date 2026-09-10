@@ -1,5 +1,15 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UsersRound, LogOut, Sun, Moon, UserCircle } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  UsersRound,
+  Settings,
+  UserCircle,
+  LogOut,
+  Sun,
+  Moon,
+  Server,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface LayoutProps {
@@ -9,88 +19,76 @@ interface LayoutProps {
 
 export default function DashboardLayout({ isDarkMode, toggleTheme }: LayoutProps) {
   const navigate = useNavigate();
-  const { hasPermission } = useAuth();
+  const { hasPermission, clearCurrentUser, appName } = useAuth();
 
   const handleLogout = () => {
-    // In a real app, you would clear auth tokens here
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    clearCurrentUser();
     navigate('/login');
   };
 
-  // NavLink automatically applies an "active" class when the route matches
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 px-fluid-sm py-2 rounded-fluid-md transition-colors font-medium text-fluid-sm ${
-      isActive 
-        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400' 
+    `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+      isActive
+        ? 'bg-blue-600 text-white'
         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
     }`;
 
+  // Every object/section in the app, gated the same way the routes are.
+  const navItems = [
+    { to: '/home', label: 'Dashboard', icon: LayoutDashboard, show: true },
+    { to: '/users', label: 'User List', icon: Users, show: hasPermission('system', 'read') },
+    { to: '/groups', label: 'Groups', icon: UsersRound, show: hasPermission('groups', 'read') },
+    { to: '/settings', label: 'Settings', icon: Settings, show: hasPermission('system', 'read') },
+    { to: '/me', label: 'Profile', icon: UserCircle, show: true },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300 p-fluid-md">
-      
-      {/* Responsive Navigation Header */}
-      <header className="w-full max-w-6xl mx-auto mb-fluid-lg flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-fluid-sm rounded-fluid-lg shadow-sm border border-slate-200 dark:border-slate-800">
-        
-        {/* Logo / Brand */}
-        <div className="flex items-center px-2">
-          <span className="font-extrabold text-fluid-lg text-blue-600 dark:text-blue-400 tracking-tight">
-            FluidApp
+    <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      {/* Sidebar */}
+      <aside className="w-64 shrink-0 h-screen flex flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div className="flex items-center gap-2 px-6 h-16 shrink-0 border-b border-slate-200 dark:border-slate-800">
+          <Server className="text-blue-600" size={22} />
+          <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight truncate">
+            {appName}
           </span>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-          <NavLink to="/home" className={navLinkClass}>
-            <LayoutDashboard size={18} />
-            <span>Dashboard</span>
-          </NavLink>
-          
-          {hasPermission('system', 'read') && (
-            <NavLink to="/users" className={navLinkClass}>
-              <Users size={18} />
-              <span>User List</span>
-            </NavLink>
-          )}
-
-          {hasPermission('groups', 'read') && (
-            <NavLink to="/groups" className={navLinkClass}>
-              <UsersRound size={18} />
-              <span>Groups</span>
-            </NavLink>
-          )}
-
-          <NavLink to="/me" className={navLinkClass}>
-            <UserCircle size={18} />
-            <span>Profile</span>
-          </NavLink>
-
+        <nav className="flex-1 flex flex-col gap-1 p-4 overflow-y-auto">
+          {navItems
+            .filter((item) => item.show)
+            .map((item) => (
+              <NavLink key={item.to} to={item.to} className={navLinkClass}>
+                <item.icon size={18} />
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
         </nav>
 
-        {/* Actions (Theme Toggle & Logout) */}
-        <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-slate-200 dark:border-slate-700">
-          <button 
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-1 shrink-0">
+          <button
             onClick={toggleTheme}
-            className="p-2 rounded-full text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label="Toggle Theme"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
-          
-          <button 
+
+          <button
             onClick={handleLogout}
-            className="flex items-center gap-2 p-2 px-4 rounded-fluid-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium text-fluid-sm"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
           >
             <LogOut size={18} />
-            <span className="hidden sm:inline">Logout</span>
+            <span>Logout</span>
           </button>
         </div>
-
-      </header>
+      </aside>
 
       {/* Main Content Area (Pages get injected here) */}
-      <main className="flex-1 flex flex-col w-full max-w-6xl mx-auto">
+      <main className="flex-1 h-screen overflow-y-auto p-8">
         <Outlet />
       </main>
-
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,7 +10,7 @@ interface RequirePermissionProps {
 }
 
 export default function RequirePermission({ module, action, children }: RequirePermissionProps) {
-  const { hasPermission, loading } = useAuth();
+  const { hasPermission, hasAnyAccess, loading, currentUser } = useAuth();
 
   if (loading) {
     return (
@@ -18,6 +18,19 @@ export default function RequirePermission({ module, action, children }: RequireP
         Checking permissions...
       </div>
     );
+  }
+
+  // Not logged in at all (no/expired session) — distinct from being logged
+  // in but lacking this specific permission, handled below.
+  if (!currentUser) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  // Logged in but an admin hasn't granted any role/permission at all yet —
+  // send them to the friendlier "waiting on approval" screen instead of a
+  // generic per-page denial.
+  if (!hasAnyAccess(currentUser)) {
+    return <Navigate to="/pending-approval" replace />;
   }
 
   if (!hasPermission(module, action)) {

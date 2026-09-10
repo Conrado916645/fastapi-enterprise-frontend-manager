@@ -82,7 +82,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-8 animate-fade-in">
+    <div className="max-w-5xl mx-auto animate-fade-in">
       <h1 className="text-3xl font-bold mb-8 dark:text-white flex items-center gap-3">
         <User className="text-blue-600" size={32} /> My Profile
       </h1>
@@ -92,7 +92,7 @@ export default function Profile() {
         <div className="space-y-8">
           
           {/* Identity Card */}
-          <div className="relative bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+          <div className="relative bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 text-center">
             <button
               onClick={() => setShowEditProfile(true)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 rounded-full transition-colors"
@@ -115,7 +115,7 @@ export default function Profile() {
               </p>
             )}
 
-            <div className="mt-6 mb-6 space-y-3 text-sm text-left bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50">
+            <div className="mt-6 mb-6 space-y-3 text-sm text-left bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-100 dark:border-slate-700/50">
               <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300 break-all">
                 <Mail size={16} className="text-slate-400 shrink-0" />
                 {user.email || (
@@ -139,7 +139,7 @@ export default function Profile() {
           </div>
 
           {/* Two-Factor Auth (TOTP) Card */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold flex items-center gap-2 dark:text-white">
                 <RectangleEllipsis
@@ -159,14 +159,14 @@ export default function Profile() {
             {user.is_totp_enabled ? (
               <button
                 onClick={() => setShowMfaDisable(true)}
-                className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 py-3 rounded-xl font-bold transition-colors border border-red-200 dark:border-red-800/50"
+                className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 py-3 rounded-lg font-bold transition-colors border border-red-200 dark:border-red-800/50"
               >
                 Disable 2FA
               </button>
             ) : (
               <button
                 onClick={() => setShowMfaSetup(true)}
-                className="w-full bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-400 py-3 rounded-xl font-bold transition-colors border border-blue-200 dark:border-blue-800/50"
+                className="w-full bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-400 py-3 rounded-lg font-bold transition-colors border border-blue-200 dark:border-blue-800/50"
               >
                 Enable 2FA
               </button>
@@ -174,14 +174,14 @@ export default function Profile() {
           </div>
 
           {/* Security Card */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
             <h3 className="font-bold flex items-center gap-2 dark:text-white mb-4">
               <Key size={20} className="text-amber-500" /> Security
             </h3>
             <div className="space-y-3">
               <button
                 onClick={() => setShowPasswordModal(true)}
-                className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white py-3 rounded-xl font-bold transition-colors"
+                className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white py-3 rounded-lg font-bold transition-colors"
               >
                 Change Password
               </button>
@@ -192,7 +192,7 @@ export default function Profile() {
         {/* Right Column: Details & Permissions */}
         <div className="md:col-span-2 space-y-8">
           {/* Account Details */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
             <h3 className="font-bold flex items-center gap-2 dark:text-white mb-6">
               <Calendar size={20} className="text-blue-500" /> Account Details
             </h3>
@@ -242,7 +242,7 @@ export default function Profile() {
           </div>
 
           {/* Read-Only Permissions List */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
             <h3 className="font-bold flex items-center gap-2 dark:text-white mb-6">
               <Shield size={20} className="text-emerald-500" /> My Permissions
             </h3>
@@ -257,7 +257,7 @@ export default function Profile() {
                   ([app, actions]: [string, any]) => (
                     <div
                       key={app}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 gap-3"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 gap-3"
                     >
                       <span className="font-bold capitalize dark:text-white">
                         {app}

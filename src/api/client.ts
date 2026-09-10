@@ -41,6 +41,16 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // 0. Network error — the request went out but no response came back at
+    // all (server down, connection refused, DNS failure, timeout, etc). This
+    // is what a crashed/unreachable backend looks like to axios; a 500 or a
+    // CORS-blocked response due to a server-side error is NOT this — those
+    // still have error.response and fall through to the checks below.
+    if (!error.response && error.request) {
+      window.dispatchEvent(new CustomEvent('BACKEND_OFFLINE'));
+      return Promise.reject(error);
+    }
+
     // 1. Detect Forced Password Change Requirement (403 Forbidden)
     if (error.response?.status === 403 && error.response?.data?.detail === 'PASSWORD_CHANGE_REQUIRED') {
       window.dispatchEvent(new CustomEvent('REQUIRE_PASSWORD_CHANGE'));

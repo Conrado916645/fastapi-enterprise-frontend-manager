@@ -141,15 +141,15 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full p-6 my-8">
+    <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 overflow-y-auto p-4">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg max-w-2xl w-full p-6 my-8">
         <h2 className="text-xl font-semibold mb-4 dark:text-white">
           {source ? "Edit Source" : "Add Source"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Name *</label>
             <input
               name="name"
               value={form.name}
@@ -161,7 +161,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
 
           {/* Endpoint */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Endpoint URL *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Endpoint URL *</label>
             <input
               name="endpoint"
               value={form.endpoint}
@@ -173,7 +173,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
 
           {/* Method */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Method</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Method</label>
             <select
               name="method"
               value={form.method}
@@ -189,11 +189,11 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
           </div>
 
           {/* Authentication */}
-          <fieldset className="border p-3 rounded-md dark:border-gray-600">
-            <legend className="text-sm font-medium text-gray-700 dark:text-gray-300">Authentication</legend>
+          <fieldset className="border p-3 rounded-md dark:border-slate-600">
+            <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Authentication</legend>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm text-gray-600 dark:text-gray-400">Auth Type</label>
+                <label className="block text-sm text-slate-600 dark:text-slate-400">Auth Type</label>
                 <select
                   name="auth_type"
                   value={form.auth_type}
@@ -208,7 +208,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
               </div>
               {form.auth_type !== "" && form.auth_type !== "none" && (
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400">
+                  <label className="block text-sm text-slate-600 dark:text-slate-400">
                     {form.auth_type === "basic" ? "Username Env Var" : "Token Env Variable"}
                   </label>
                   <input
@@ -218,7 +218,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
                     placeholder="e.g., STRIPE_API_KEY"
                     className="w-full px-3 py-2 border rounded-md dark:bg-slate-700 dark:text-white dark:border-slate-600"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     Environment variable name where the secret is stored.
                   </p>
                 </div>
@@ -229,11 +229,11 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
           {/* Custom Headers */}
           <div>
             <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Custom Headers</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Custom Headers</label>
               <button
                 type="button"
                 onClick={addHeader}
-                className="text-xs text-indigo-600 hover:text-indigo-800"
+                className="text-xs text-blue-600 hover:text-blue-800"
               >
                 + Add Header
               </button>
@@ -264,10 +264,10 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
           </div>
 
           {/* Pagination */}
-          <fieldset className="border p-3 rounded-md dark:border-gray-600">
-            <legend className="text-sm font-medium text-gray-700 dark:text-gray-300">Pagination</legend>
+          <fieldset className="border p-3 rounded-md dark:border-slate-600">
+            <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Pagination</legend>
             <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400">Pagination Type</label>
+              <label className="block text-sm text-slate-600 dark:text-slate-400">Pagination Type</label>
               <select
                 name="pagination_type"
                 value={form.pagination_type}
@@ -280,7 +280,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
               </select>
             </div>
             <div className="mt-2">
-              <label className="block text-sm text-gray-600 dark:text-gray-400">Pagination Config (JSON)</label>
+              <label className="block text-sm text-slate-600 dark:text-slate-400">Pagination Config (JSON)</label>
               <textarea
                 name="pagination_config_json"
                 value={form.pagination_config_json}
@@ -289,7 +289,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
                 className="w-full px-3 py-2 border rounded-md font-mono text-sm dark:bg-slate-700 dark:text-white dark:border-slate-600"
                 placeholder='{"cursor_param": "starting_after", "results_field": "data"}'
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 JSON object with cursor/parameter names, results field, etc.
               </p>
             </div>
@@ -297,7 +297,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
 
           {/* Validation Rules */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Validation Rules (JSON)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Validation Rules (JSON)</label>
             <textarea
               name="validation_rules_json"
               value={form.validation_rules_json}
@@ -310,7 +310,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
 
           {/* Schedule */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Schedule (cron expression)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Schedule (cron expression)</label>
             <input
               name="schedule"
               value={form.schedule}
@@ -321,17 +321,17 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-600">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-slate-600">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md"
+              className="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white rounded-md"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
             >
               Save
             </button>

@@ -82,8 +82,8 @@ export default function GroupFormModal({ group, onClose, onSaved }: GroupFormMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl p-6 shadow-2xl border dark:border-slate-800 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-lg p-6 border dark:border-slate-800 flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center mb-6 shrink-0">
           <h2 className="text-xl font-bold dark:text-white">
             {isEditing ? "Edit Group" : "New Group"}
@@ -99,14 +99,14 @@ export default function GroupFormModal({ group, onClose, onSaved }: GroupFormMod
               placeholder="Group name (e.g. Editors)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="p-3 bg-slate-50 dark:bg-slate-950 border dark:border-slate-700 rounded-xl outline-none focus:border-blue-500 transition-colors dark:text-white"
+              className="p-3 bg-slate-50 dark:bg-slate-950 border dark:border-slate-700 rounded-lg outline-none focus:border-blue-500 transition-colors dark:text-white"
             />
             <textarea
               placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="p-3 bg-slate-50 dark:bg-slate-950 border dark:border-slate-700 rounded-xl outline-none focus:border-blue-500 transition-colors dark:text-white resize-none"
+              className="p-3 bg-slate-50 dark:bg-slate-950 border dark:border-slate-700 rounded-lg outline-none focus:border-blue-500 transition-colors dark:text-white resize-none"
             />
           </div>
 
@@ -118,7 +118,7 @@ export default function GroupFormModal({ group, onClose, onSaved }: GroupFormMod
               placeholder="Search applications..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 transition-colors dark:text-white"
+              className="w-full pl-10 p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm outline-none focus:border-blue-500 transition-colors dark:text-white"
             />
           </div>
 
@@ -136,7 +136,7 @@ export default function GroupFormModal({ group, onClose, onSaved }: GroupFormMod
               filteredApps.map(([app, actions]) => (
                 <div
                   key={app}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <h4 className="font-bold text-slate-800 dark:text-white capitalize w-32 shrink-0">
                     {app}
@@ -151,7 +151,7 @@ export default function GroupFormModal({ group, onClose, onSaved }: GroupFormMod
                           onClick={() => togglePermission(app, action)}
                           className={`px-3 py-1 text-xs rounded-full border transition-all ${
                             isSelected
-                              ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                              ? "bg-blue-600 text-white border-blue-600"
                               : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-400"
                           }`}
                         >
@@ -169,7 +169,7 @@ export default function GroupFormModal({ group, onClose, onSaved }: GroupFormMod
         <button
           onClick={handleSave}
           disabled={loading || isInvalid}
-          className="w-full mt-6 shrink-0 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+          className="w-full mt-6 shrink-0 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
         >
           {loading ? (
             <Loader2 className="animate-spin" />

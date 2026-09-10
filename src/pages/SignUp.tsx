@@ -1,22 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { User, Lock, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
-import { AuthService } from '../api/services';
-import TOTPEntryModal from '../components/TOTPEntryModal';
-import CaptchaChallenge, { type CaptchaChallengeHandle } from '../components/CaptchaChallenge';
-import GoogleRecaptcha, { type GoogleRecaptchaHandle } from '../components/GoogleRecaptcha';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { User, Lock, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
+import { AuthService } from "../api/services";
+import CaptchaChallenge, { type CaptchaChallengeHandle } from "../components/CaptchaChallenge";
+import GoogleRecaptcha, { type GoogleRecaptchaHandle } from "../components/GoogleRecaptcha";
+import { useAuth } from "../context/AuthContext";
 
-export default function Login() {
+export default function SignUp() {
   const navigate = useNavigate();
-  const { refreshCurrentUser, appName } = useAuth();
+  const { refreshCurrentUser } = useAuth();
 
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [mfaToken, setMfaToken] = useState<string | null>(null);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const [signupEnabled, setSignupEnabled] = useState(false);
-  const [emailEnabled, setEmailEnabled] = useState(false);
   const [captchaEnabled, setCaptchaEnabled] = useState(false);
   const [captchaProvider, setCaptchaProvider] = useState<'local' | 'google'>('local');
   const [googleSiteKey, setGoogleSiteKey] = useState('');
@@ -26,14 +21,19 @@ export default function Login() {
   const captchaRef = useRef<CaptchaChallengeHandle>(null);
   const recaptchaRef = useRef<GoogleRecaptchaHandle>(null);
 
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    confirm_password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     AuthService.getRegistrationStatus()
       .then((res) => setSignupEnabled(!!res.allow_self_registration))
-      .catch(() => setSignupEnabled(false));
-
-    AuthService.getEmailStatus()
-      .then((res) => setEmailEnabled(!!res.enabled))
-      .catch(() => setEmailEnabled(false));
+      .catch(() => setSignupEnabled(false))
+      .finally(() => setCheckingStatus(false));
 
     AuthService.getCaptchaStatus()
       .then((res) => {
@@ -49,38 +49,38 @@ export default function Login() {
   const captchaSatisfied = !captchaEnabled || (isGoogleCaptcha ? !!recaptchaToken : !!captchaAnswer);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    setError(''); 
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const finalizeLogin = async (accessToken: string, refreshToken: string) => {
-    localStorage.setItem("access_token", accessToken);
-    localStorage.setItem("refresh_token", refreshToken);
-    await refreshCurrentUser();
-    navigate('/home');
-  };
-  
+  const isInvalid =
+    !formData.username ||
+    !formData.password ||
+    !formData.confirm_password ||
+    formData.password !== formData.confirm_password ||
+    !captchaSatisfied;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setError("");
 
+    if (formData.password !== formData.confirm_password) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await AuthService.login({
-        ...credentials,
+      await AuthService.selfRegister({
+        ...formData,
         captcha_id: captchaId,
         captcha_answer: captchaAnswer,
         recaptcha_token: recaptchaToken,
       });
-
-      // Added your MFA check here inside the try block
-      if (response.status === 'mfa_required') {
-        setMfaToken(response.mfa_token);
-      } else if (response.access_token) {
-        await finalizeLogin(response.access_token, response.refresh_token);
-      }
+      await refreshCurrentUser();
+      navigate("/home");
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Invalid username or password. Please try again.");
+      setError(err.response?.data?.detail || "Registration failed. Please try again.");
       if (isLocalCaptcha) {
         setCaptchaAnswer('');
         captchaRef.current?.refresh();
@@ -93,32 +93,37 @@ export default function Login() {
     }
   };
 
-const handleMfaSubmit = async (code: string) => {
-    if (!mfaToken) return;
-  
-    const response = await AuthService.verifyMfa({ 
-      mfa_token: mfaToken, 
-      code: code 
-    });
-    
-    await finalizeLogin(response.access_token, response.refresh_token);
-    setMfaToken(null);
-  };
+  if (checkingStatus) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <Loader2 className="animate-spin text-blue-500" size={32} />
+      </div>
+    );
+  }
+
+  if (!signupEnabled) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center gap-4 p-8 bg-slate-50 dark:bg-slate-950">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Sign-Up Unavailable</h1>
+        <p className="text-slate-500 max-w-sm">
+          Self-registration is currently disabled. Ask an administrator to create an account for you.
+        </p>
+        <Link to="/login" className="text-blue-600 hover:underline font-medium">
+          Back to Login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">
-
       <div className="w-full max-w-md bg-white dark:bg-slate-900 p-10 lg:p-12 rounded-lg border border-slate-200 dark:border-slate-800">
-        
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
-          <p className="text-slate-500 dark:text-slate-400">
-            Sign in to access {appName}.
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Create Account</h1>
+          <p className="text-slate-500 dark:text-slate-400">Sign up to get started.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          
           {error && (
             <div className="flex items-center gap-3 p-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800/50">
               <AlertCircle size={18} className="shrink-0" />
@@ -132,38 +137,50 @@ const handleMfaSubmit = async (code: string) => {
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 id="username"
                 name="username"
                 required
-                value={credentials.username}
+                value={formData.username}
                 onChange={handleChange}
-                placeholder="admin_user"
+                placeholder="jane_doe"
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all"
               />
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-xs font-bold text-slate-600 dark:text-slate-500 uppercase tracking-wider">
-                Password
-              </label>
-              {emailEnabled && (
-                <Link to="/forgot-password" className="text-xs font-medium text-blue-600 hover:underline">
-                  Forgot password?
-                </Link>
-              )}
-            </div>
+            <label htmlFor="password" className="text-xs font-bold text-slate-600 dark:text-slate-500 uppercase tracking-wider">
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 id="password"
                 name="password"
                 required
-                value={credentials.password}
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="confirm_password" className="text-xs font-bold text-slate-600 dark:text-slate-500 uppercase tracking-wider">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+                value={formData.confirm_password}
                 onChange={handleChange}
                 placeholder="••••••••"
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all"
@@ -189,38 +206,27 @@ const handleMfaSubmit = async (code: string) => {
 
           <button
             type="submit"
-            disabled={loading || !captchaSatisfied}
+            disabled={loading || isInvalid}
             className="mt-4 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg font-bold transition-all disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 size={18} className="animate-spin" />
             ) : (
               <>
-                Sign In
+                Create Account
                 <ArrowRight size={18} />
               </>
             )}
           </button>
         </form>
 
-        {signupEnabled && (
-          <p className="text-center text-sm text-slate-500 mt-6">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600 hover:underline font-medium">
-              Create one
-            </Link>
-          </p>
-        )}
-
+        <p className="text-center text-sm text-slate-500 mt-6">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline font-medium">
+            Sign in
+          </Link>
+        </p>
       </div>
-
-      {mfaToken && (
-        <TOTPEntryModal 
-          onClose={() => setMfaToken(null)} 
-          onSuccess={handleMfaSubmit}    
-        />
-      )}
-
     </div>
   );
 }

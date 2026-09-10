@@ -84,7 +84,7 @@ export default function EmailSettings() {
     <div>
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 bg-white dark:bg-slate-800 p-6 rounded-lg shadow"
+        className="space-y-5 bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700"
       >
         {/* Enable / Disable toggle */}
         <div className="flex items-center gap-3">
@@ -96,16 +96,16 @@ export default function EmailSettings() {
               onChange={handleChange}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
           </label>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-300">
+          <span className="text-sm font-medium text-slate-900 dark:text-slate-300">
             Enable Email Sending
           </span>
         </div>
 
         {/* Host */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             SMTP Host
           </label>
           <input
@@ -114,13 +114,13 @@ export default function EmailSettings() {
             value={settings.smtp_host}
             onChange={handleChange}
             placeholder="smtp.gmail.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
         </div>
 
         {/* Port */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             Port
           </label>
           <input
@@ -128,13 +128,13 @@ export default function EmailSettings() {
             name="smtp_port"
             value={settings.smtp_port}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
         </div>
 
         {/* Username */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             SMTP Username
           </label>
           <input
@@ -143,13 +143,13 @@ export default function EmailSettings() {
             value={settings.smtp_username}
             onChange={handleChange}
             placeholder="your@email.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
         </div>
 
         {/* Password */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             SMTP Password
           </label>
           <input
@@ -158,7 +158,7 @@ export default function EmailSettings() {
             value={settings.smtp_password}
             onChange={handleChange}
             placeholder="Leave blank to keep existing"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
         </div>
 
@@ -169,16 +169,16 @@ export default function EmailSettings() {
             name="smtp_use_tls"
             checked={settings.smtp_use_tls}
             onChange={handleChange}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
           />
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
             Use TLS
           </label>
         </div>
 
         {/* From Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             From Email
           </label>
           <input
@@ -187,13 +187,13 @@ export default function EmailSettings() {
             value={settings.from_email}
             onChange={handleChange}
             placeholder="no-reply@example.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
         </div>
 
         {/* From Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
             From Name
           </label>
           <input
@@ -202,21 +202,21 @@ export default function EmailSettings() {
             value={settings.from_name}
             onChange={handleChange}
             placeholder="Your App"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save Settings"}
         </button>
       </form>
 
       {/* Test Email Section */}
-      <div className="mt-8 bg-white dark:bg-slate-800 p-6 rounded-lg shadow">
+      <div className="mt-8 bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700">
         <h2 className="text-lg font-semibold mb-3 dark:text-white">
           Send Test Email
         </h2>
@@ -226,12 +226,12 @@ export default function EmailSettings() {
             value={testEmail}
             onChange={(e) => setTestEmail(e.target.value)}
             placeholder="recipient@example.com"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
+            className="flex-1 px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white dark:border-slate-600"
           />
           <button
             onClick={handleTestEmail}
             disabled={sending}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md shadow focus:outline-none disabled:opacity-50"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none disabled:opacity-50"
           >
             {sending ? "Sending..." : "Send Test"}
           </button>

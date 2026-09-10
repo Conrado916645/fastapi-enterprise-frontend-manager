@@ -6,18 +6,21 @@ export const AuthService = {
     const formData = new URLSearchParams();
     formData.append('username', credentials.username);
     formData.append('password', credentials.password);
+    if (credentials.captcha_id) formData.append('captcha_id', credentials.captcha_id);
+    if (credentials.captcha_answer) formData.append('captcha_answer', credentials.captcha_answer);
+    if (credentials.recaptcha_token) formData.append('recaptcha_token', credentials.recaptcha_token);
 
     const response = await apiClient.post(ENDPOINTS.auth.login, formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
-    
+
     if (response.data.access_token) {
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('refresh_token', response.data.refresh_token);
     }
-    
+
     return response.data;
   },
   // Inside your AuthService
@@ -28,9 +31,52 @@ verifyMfa: async (payload: { mfa_token: string; code: string }) => {
     localStorage.setItem('access_token', response.data.access_token);
     localStorage.setItem('refresh_token', response.data.refresh_token);
   }
-  
+
   return response.data;
-}
+},
+
+  getRegistrationStatus: async () => {
+    const response = await apiClient.get(ENDPOINTS.auth.registrationStatus);
+    return response.data;
+  },
+
+  selfRegister: async (payload: {
+    username: string;
+    password: string;
+    confirm_password: string;
+    captcha_id?: string;
+    captcha_answer?: string;
+    recaptcha_token?: string;
+  }) => {
+    const response = await apiClient.post(ENDPOINTS.auth.register, payload);
+
+    if (response.data.access_token) {
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('refresh_token', response.data.refresh_token);
+    }
+
+    return response.data;
+  },
+
+  getCaptchaStatus: async () => {
+    const response = await apiClient.get(ENDPOINTS.auth.captchaStatus);
+    return response.data;
+  },
+
+  getCaptcha: async () => {
+    const response = await apiClient.get(ENDPOINTS.auth.captcha);
+    return response.data;
+  },
+
+  getAppInfo: async () => {
+    const response = await apiClient.get(ENDPOINTS.auth.appInfo);
+    return response.data;
+  },
+
+  getEmailStatus: async () => {
+    const response = await apiClient.get(ENDPOINTS.auth.emailStatus);
+    return response.data;
+  },
 };
 
 export const SystemService = {
@@ -46,10 +92,11 @@ export const SystemService = {
   getDashboardMetrics: async () => {
     try {
       const response = await apiClient.get(ENDPOINTS.system.dashboard);
-      
+
       return {
         metrics: response.data.metrics,
-        apps: response.data.installed_apps,
+        resources: response.data.resources,
+        installed_apps: response.data.installed_apps,
         logs: response.data.recent_logs,
         fetchedAt: new Date().toISOString()
       };
@@ -58,8 +105,8 @@ export const SystemService = {
       throw error;
     }
   },
-  pingSystem: async () => {
-    const response = await apiClient.get('/api/v1/system/health');
+  getBackendHealth: async () => {
+    const response = await apiClient.get(ENDPOINTS.system.health);
     return response.data;
   },
   getUserById: async (userId: string) => {
@@ -70,9 +117,9 @@ export const SystemService = {
     const response = await apiClient.delete(`/system/users/${userId}`);
     return response.data;
   },
-  updateUser: async (userId: string | number, payload: { 
-    is_active?: boolean, 
-    permissions?: Record<string, string[]> 
+  updateUser: async (userId: string | number, payload: {
+    is_active?: boolean,
+    permissions?: Record<string, string[]>
   }) => {
     const response = await apiClient.patch(`/system/users/${userId}`, payload);
     return response.data;
@@ -97,7 +144,7 @@ export const UserService = {
     const response = await apiClient.post('/users/me/mfa/setup');
     return response.data;
   },
-  
+
   verifyMfaSetup: async (code: string) => {
     const response = await apiClient.post(ENDPOINTS.users.mfaVerify, { code });
     return response.data;
@@ -117,25 +164,89 @@ export const UserService = {
     const response = await apiClient.patch(ENDPOINTS.users.me, payload);
     return response.data;
   },
+
+  sendVerificationEmail: async () => {
+    const response = await apiClient.post(ENDPOINTS.users.sendVerificationEmail);
+    return response.data;
+  },
+};
+
+export const PasswordResetService = {
+  forgotPassword: async (email: string) => {
+    const response = await apiClient.post(ENDPOINTS.users.forgotPassword, { email });
+    return response.data;
+  },
+  resetPassword: async (token: string, new_password: string) => {
+    const response = await apiClient.post(ENDPOINTS.users.resetPassword, { token, new_password });
+    return response.data;
+  },
+  verifyEmail: async (token: string) => {
+    const response = await apiClient.get(ENDPOINTS.users.verifyEmail, { params: { token } });
+    return response.data;
+  },
 };
 
 export const UserRegistrationService = {
-  registerUser: async (userData: { 
-    username: string; 
-    password: string; 
-    confirm_password: string; 
-    permissions: Record<string, any> 
+  registerUser: async (userData: {
+    username: string;
+    password: string;
+    confirm_password: string;
+    permissions: Record<string, any>;
+    group_ids?: string[];
   }) => {
     const response = await apiClient.post(ENDPOINTS.users.register, userData);
     return response.data;
   }
 };
 
+export const RegistrationSettingsService = {
+  getSettings: async () => {
+    const response = await apiClient.get(ENDPOINTS.system.registrationSettings);
+    return response.data;
+  },
+  updateSettings: async (payload: { allow_self_registration: boolean }) => {
+    const response = await apiClient.patch(ENDPOINTS.system.registrationSettings, payload);
+    return response.data;
+  },
+};
+
+export const CaptchaSettingsService = {
+  getSettings: async () => {
+    const response = await apiClient.get(ENDPOINTS.system.captchaSettings);
+    return response.data;
+  },
+  updateSettings: async (payload: {
+    is_enabled: boolean;
+    provider: 'local' | 'google';
+    captcha_type: 'math' | 'text' | 'random';
+    google_site_key?: string;
+    google_secret_key?: string;
+  }) => {
+    const response = await apiClient.patch(ENDPOINTS.system.captchaSettings, payload);
+    return response.data;
+  },
+};
+
+export const GeneralSettingsService = {
+  getSettings: async () => {
+    const response = await apiClient.get(ENDPOINTS.system.generalSettings);
+    return response.data;
+  },
+  updateSettings: async (payload: {
+    app_name: string;
+    frontend_domain?: string;
+    backend_domain?: string;
+  }) => {
+    const response = await apiClient.patch(ENDPOINTS.system.generalSettings, payload);
+    return response.data;
+  },
+};
+
 export const InstalledAppsService = {
   getInstalledApps: async () => {
     try {
       const response = await apiClient.get(ENDPOINTS.system.installedApps);
-      return response.data.installed_apps; 
+      return response.data.installed_apps;
     } catch (error: any) {
       console.error("System Registry Error:", error.response?.data || error.message);
       throw error;
@@ -153,7 +264,7 @@ export const GenerateApiKeyService = {
 export const ChangePasswordService = {
   resetPassword: async (id: string | number, newPassword: string) => {
     const response = await apiClient.post(`/system/users/${id}/reset-password`, {
-      new_password: newPassword 
+      new_password: newPassword
     });
     return response.data;
   }
@@ -185,6 +296,7 @@ export const AISettingsService = {
     is_enabled: boolean;
     provider?: string;
     model_name?: string;
+    base_url?: string;
     api_key?: string;
     custom_prompt?: string;
   }) => {

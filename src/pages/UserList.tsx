@@ -75,7 +75,7 @@ export default function UserList() {
       </header>
 
       {/* Toolbar */}
-      <section className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+      <section className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
         <div className="relative">
           <Search className="absolute left-3 top-3 text-slate-400" size={20} />
           <input 
@@ -89,7 +89,7 @@ export default function UserList() {
       </section>
 
       {/* Table */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <section className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
         {loading ? (
           <div className="p-10 text-center text-slate-500 animate-pulse">Syncing User Directory...</div>
         ) : (

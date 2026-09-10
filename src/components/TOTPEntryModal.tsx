@@ -41,8 +41,8 @@ export default function TOTPEntryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl w-full max-w-sm shadow-2xl border dark:border-slate-800 flex flex-col relative">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-lg w-full max-w-sm border border-slate-200 dark:border-slate-800 flex flex-col relative">
         <button 
           onClick={onClose} 
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
@@ -72,7 +72,7 @@ export default function TOTPEntryModal({
               value={code} 
               onChange={e => setCode(e.target.value.replace(/\D/g, ''))} // Strips out letters/symbols instantly
               disabled={isVerifying}
-              className={`w-full p-4 border-2 rounded-xl dark:bg-slate-800 dark:text-white text-center font-mono text-3xl tracking-[0.5em] outline-none transition-colors ${
+              className={`w-full p-4 border-2 rounded-lg dark:bg-slate-800 dark:text-white text-center font-mono text-3xl tracking-[0.5em] outline-none transition-colors ${
                 error 
                   ? 'border-red-500 focus:border-red-600' 
                   : 'border-slate-200 dark:border-slate-700 focus:border-blue-500'
@@ -89,7 +89,7 @@ export default function TOTPEntryModal({
           <button 
             type="submit" 
             disabled={isVerifying || code.length !== 6} 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold flex items-center justify-center transition-colors disabled:opacity-50"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-lg font-bold flex items-center justify-center transition-colors disabled:opacity-50"
           >
             {isVerifying ? <Loader2 className="animate-spin" size={20} /> : "Verify Identity"}
           </button>

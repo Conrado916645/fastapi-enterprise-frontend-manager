@@ -55,8 +55,8 @@ export default function EditProfileModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl w-full max-w-md shadow-2xl border dark:border-slate-800 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-lg w-full max-w-md border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6 shrink-0">
@@ -72,7 +72,7 @@ export default function EditProfileModal({
         {/* Content */}
         <div className="overflow-y-auto custom-scrollbar flex-grow pr-2">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm border border-red-200 dark:border-red-800/50 mb-4">
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg text-sm border border-red-200 dark:border-red-800/50 mb-4">
               {error}
             </div>
           )}
@@ -86,7 +86,7 @@ export default function EditProfileModal({
                 placeholder="John Doe"
                 value={formData.full_name} 
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors" 
+                className="w-full p-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors" 
               />
             </div>
 
@@ -98,7 +98,7 @@ export default function EditProfileModal({
                 placeholder="user@example.com"
                 value={formData.email} 
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors" 
+                className="w-full p-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors" 
                 required
               />
             </div>
@@ -111,7 +111,7 @@ export default function EditProfileModal({
                 placeholder="+1 234 567 890"
                 value={formData.phone_number} 
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors" 
+                className="w-full p-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors" 
               />
             </div>
 
@@ -122,14 +122,14 @@ export default function EditProfileModal({
                 name="date_of_birth"
                 value={formData.date_of_birth} 
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors cursor-text" 
+                className="w-full p-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-blue-500 transition-colors cursor-text" 
               />
             </div>
 
             <button 
               type="submit" 
               disabled={loading} 
-              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold flex items-center justify-center transition-colors disabled:opacity-50"
+              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold flex items-center justify-center transition-colors disabled:opacity-50"
             >
               {loading ? <Loader2 className="animate-spin" size={20} /> : "Save Changes"}
             </button>

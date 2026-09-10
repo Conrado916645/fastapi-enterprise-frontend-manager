@@ -83,8 +83,8 @@ export default function GroupMembersModal({ group, onClose, onChanged }: GroupMe
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-2xl p-6 shadow-2xl border dark:border-slate-800 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-lg p-6 border dark:border-slate-800 flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center mb-6 shrink-0">
           <h2 className="text-xl font-bold dark:text-white">
             Manage Members — <span className="text-blue-600">{group.name}</span>

@@ -81,8 +81,8 @@ export default function TOTPMFAModel({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl w-full max-w-md shadow-2xl border dark:border-slate-800 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-lg w-full max-w-md border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6 shrink-0">
@@ -108,12 +108,12 @@ export default function TOTPMFAModel({
                 placeholder="Enter current password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-red-500 transition-colors"
+                className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:border-red-500 transition-colors"
                 required
               />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <button type="submit" disabled={isSubmitting || !password} className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold">
+            <button type="submit" disabled={isSubmitting || !password} className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold">
               {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Confirm Disable"}
             </button>
           </form>
@@ -135,11 +135,11 @@ export default function TOTPMFAModel({
                   <input 
                     type="text" maxLength={6} placeholder="000000" value={verificationCode} 
                     onChange={e => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                    className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white text-center font-mono text-2xl tracking-[0.5em]" 
+                    className="w-full p-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white text-center font-mono text-2xl tracking-[0.5em]" 
                     required 
                   />
                   {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-                  <button type="submit" disabled={isSubmitting || verificationCode.length !== 6} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold">
+                  <button type="submit" disabled={isSubmitting || verificationCode.length !== 6} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">
                     {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Verify & Enable"}
                   </button>
                 </form>
