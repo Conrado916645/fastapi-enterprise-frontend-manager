@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Lock, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
-import { AuthService } from '../api/services'; 
-import TOTPEntryModal from '../components/TOTPEntryModal'; 
+import { AuthService } from '../api/services';
+import TOTPEntryModal from '../components/TOTPEntryModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
-  
+  const { refreshCurrentUser } = useAuth();
+
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,10 +19,11 @@ export default function Login() {
     setError(''); 
   };
 
-  const finalizeLogin = (accessToken: string, refreshToken: string) => {
+  const finalizeLogin = async (accessToken: string, refreshToken: string) => {
     localStorage.setItem("access_token", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
-    navigate('/home'); 
+    await refreshCurrentUser();
+    navigate('/home');
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +38,7 @@ export default function Login() {
       if (response.status === 'mfa_required') {
         setMfaToken(response.mfa_token);
       } else if (response.access_token) {
-        finalizeLogin(response.access_token, response.refresh_token);
+        await finalizeLogin(response.access_token, response.refresh_token);
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || "Invalid username or password. Please try again.");
@@ -52,7 +55,7 @@ const handleMfaSubmit = async (code: string) => {
       code: code 
     });
     
-    finalizeLogin(response.access_token, response.refresh_token);
+    await finalizeLogin(response.access_token, response.refresh_token);
     setMfaToken(null);
   };
 

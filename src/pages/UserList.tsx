@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Edit2, Lock as LockIcon, RefreshCw } from 'lucide-react';
 import { SystemService, UserService } from '../api/services';
+import { useAuth } from '../context/AuthContext';
 
 type ApiUser = {
   id: string;
@@ -17,7 +18,8 @@ type ApiUser = {
 
 export default function UserList() {
   const navigate = useNavigate();
-  
+  const { hasPermission } = useAuth();
+
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,12 +63,14 @@ export default function UserList() {
           <button onClick={loadUsers} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
             <RefreshCw size={20} />
           </button>
-          <button 
-            onClick={() => navigate('/users/register')}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-700"
-          >
-            <UserPlus size={18} /> Add User
-          </button>
+          {hasPermission('system', 'create') && (
+            <button
+              onClick={() => navigate('/users/register')}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-700"
+            >
+              <UserPlus size={18} /> Add User
+            </button>
+          )}
         </div>
       </header>
 

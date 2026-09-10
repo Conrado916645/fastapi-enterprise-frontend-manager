@@ -22,6 +22,7 @@ import {
 } from "../api/services";
 
 import { notify } from "../utils/toast";
+import { useAuth } from "../context/AuthContext";
 
 type ModalActionType =
   | "password"
@@ -36,6 +37,7 @@ export default function EditUser() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { hasPermission } = useAuth();
   const [user, setUser] = useState(location.state?.user || null);
 
   const [modalType, setModalType] = useState<ModalActionType>(null);
@@ -64,18 +66,21 @@ export default function EditUser() {
       desc: "Password resets",
       icon: <Lock className="text-blue-500" />,
       type: "password",
+      requiredAction: "update",
     },
     {
       title: "Access Control",
       desc: "Permissions & status",
       icon: <Shield className="text-emerald-500" />,
       type: "permissions",
+      requiredAction: "update",
     },
     {
       title: "API Access",
       desc: "Generate credentials",
       icon: <Key className="text-purple-500" />,
       type: "apikey",
+      requiredAction: "update",
     },
     ...(isLocked
       ? [
@@ -84,6 +89,7 @@ export default function EditUser() {
             desc: "Remove account lockout",
             icon: <Unlock className="text-amber-500" />,
             type: "unlock",
+            requiredAction: "update",
           },
         ]
       : []),
@@ -92,8 +98,9 @@ export default function EditUser() {
       desc: "Permanently remove user",
       icon: <Trash2 className="text-red-500" />,
       type: "delete",
+      requiredAction: "delete",
     },
-  ];
+  ].filter((action) => hasPermission("system", action.requiredAction));
 
   const filteredApps = useMemo(() => {
     return Object.entries(availableApps).filter(([app]) =>

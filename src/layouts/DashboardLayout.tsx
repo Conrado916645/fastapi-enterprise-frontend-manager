@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, UsersRound, LogOut, Sun, Moon, UserCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface LayoutProps {
   isDarkMode: boolean;
@@ -8,6 +9,7 @@ interface LayoutProps {
 
 export default function DashboardLayout({ isDarkMode, toggleTheme }: LayoutProps) {
   const navigate = useNavigate();
+  const { hasPermission } = useAuth();
 
   const handleLogout = () => {
     // In a real app, you would clear auth tokens here
@@ -42,15 +44,19 @@ export default function DashboardLayout({ isDarkMode, toggleTheme }: LayoutProps
             <span>Dashboard</span>
           </NavLink>
           
-          <NavLink to="/users" className={navLinkClass}>
-            <Users size={18} />
-            <span>User List</span>
-          </NavLink>
+          {hasPermission('system', 'read') && (
+            <NavLink to="/users" className={navLinkClass}>
+              <Users size={18} />
+              <span>User List</span>
+            </NavLink>
+          )}
 
-          <NavLink to="/groups" className={navLinkClass}>
-            <UsersRound size={18} />
-            <span>Groups</span>
-          </NavLink>
+          {hasPermission('groups', 'read') && (
+            <NavLink to="/groups" className={navLinkClass}>
+              <UsersRound size={18} />
+              <span>Groups</span>
+            </NavLink>
+          )}
 
           <NavLink to="/me" className={navLinkClass}>
             <UserCircle size={18} />

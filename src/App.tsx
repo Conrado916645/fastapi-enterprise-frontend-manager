@@ -17,6 +17,8 @@ import Settings from "./pages/Settings/index";
 
 // Import the Modal
 import ChangePasswordModal from "./components/ChangePasswordModel";
+import RequirePermission from "./components/RequirePermission";
+import { AuthProvider } from "./context/AuthContext";
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -49,10 +51,10 @@ export default function App() {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
   return (
-    <>
-      {/* Injecting the Modal globally. 
-        It will sit on top of the Router content 
-        only when showModal is true. 
+    <AuthProvider>
+      {/* Injecting the Modal globally.
+        It will sit on top of the Router content
+        only when showModal is true.
       */}
       {showModal && <ChangePasswordModal onClose={() => setShowModal(false)} />}
 
@@ -91,10 +93,38 @@ export default function App() {
             }
           >
             <Route path="/home" element={<Home />} />
-            <Route path="/users" element={<UserList />} />
-            <Route path="/users/register" element={<Register />} />
-            <Route path="/users/edit/:id" element={<EditUser />} />
-            <Route path="/groups" element={<GroupList />} />
+            <Route
+              path="/users"
+              element={
+                <RequirePermission module="system" action="read">
+                  <UserList />
+                </RequirePermission>
+              }
+            />
+            <Route
+              path="/users/register"
+              element={
+                <RequirePermission module="system" action="create">
+                  <Register />
+                </RequirePermission>
+              }
+            />
+            <Route
+              path="/users/edit/:id"
+              element={
+                <RequirePermission module="system" action="read">
+                  <EditUser />
+                </RequirePermission>
+              }
+            />
+            <Route
+              path="/groups"
+              element={
+                <RequirePermission module="groups" action="read">
+                  <GroupList />
+                </RequirePermission>
+              }
+            />
             <Route path="/me" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
@@ -111,6 +141,6 @@ export default function App() {
           theme="colored"
         />
       </BrowserRouter>
-    </>
+    </AuthProvider>
   );
 }

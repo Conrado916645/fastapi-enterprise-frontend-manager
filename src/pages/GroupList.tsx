@@ -4,6 +4,7 @@ import { GroupService } from "../api/services";
 import { notify } from "../utils/toast";
 import GroupFormModal from "../components/Groups/GroupFormModal";
 import GroupMembersModal from "../components/Groups/GroupMembersModal";
+import { useAuth } from "../context/AuthContext";
 
 type ApiGroup = {
   id: string;
@@ -15,6 +16,7 @@ type ApiGroup = {
 };
 
 export default function GroupList() {
+  const { hasPermission } = useAuth();
   const [groups, setGroups] = useState<ApiGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,12 +82,14 @@ export default function GroupList() {
           <button onClick={loadGroups} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
             <RefreshCw size={20} />
           </button>
-          <button
-            onClick={() => setEditingGroup(null)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-700"
-          >
-            <Plus size={18} /> Add Group
-          </button>
+          {hasPermission("groups", "create") && (
+            <button
+              onClick={() => setEditingGroup(null)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-700"
+            >
+              <Plus size={18} /> Add Group
+            </button>
+          )}
         </div>
       </header>
 
@@ -145,27 +149,37 @@ export default function GroupList() {
                     </div>
                   </td>
                   <td className="p-4">
-                    <button
-                      onClick={() => setMembersGroup(group)}
-                      className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors text-sm"
-                    >
-                      <UsersRound size={16} /> {group.member_count}
-                    </button>
+                    {hasPermission("groups", "update") ? (
+                      <button
+                        onClick={() => setMembersGroup(group)}
+                        className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors text-sm"
+                      >
+                        <UsersRound size={16} /> {group.member_count}
+                      </button>
+                    ) : (
+                      <span className="flex items-center gap-1.5 text-slate-500 text-sm">
+                        <UsersRound size={16} /> {group.member_count}
+                      </span>
+                    )}
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-3">
-                      <button
-                        onClick={() => setEditingGroup(group)}
-                        className="text-slate-400 hover:text-blue-600 transition-colors"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => setGroupToDelete(group)}
-                        className="text-slate-400 hover:text-red-600 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {hasPermission("groups", "update") && (
+                        <button
+                          onClick={() => setEditingGroup(group)}
+                          className="text-slate-400 hover:text-blue-600 transition-colors"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      )}
+                      {hasPermission("groups", "delete") && (
+                        <button
+                          onClick={() => setGroupToDelete(group)}
+                          className="text-slate-400 hover:text-red-600 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
