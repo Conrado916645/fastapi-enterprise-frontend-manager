@@ -211,9 +211,13 @@ export default function EditUser() {
           console.warn("Unhandled action type:", modalType);
           setModalType(null);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to execute ${modalType} action:`, error);
-      notify.error(`An error occurred while processing the ${modalType} request.`);
+      // Show the server's reason (e.g. which password rule failed) when there is one.
+      notify.error(
+        error?.response?.data?.detail ||
+          `An error occurred while processing the ${modalType} request.`,
+      );
     } finally {
       setLoading(false);
     }

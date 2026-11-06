@@ -4,7 +4,7 @@ import SourceList from '../../components/Ingestion/SourceList';
 import DataViewer from '../../components/Ingestion/DataViewer';
 
 const ApiIngestion = () => {
-  const [viewSourceId, setViewSourceId] = useState(null);
+  const [viewSourceId, setViewSourceId] = useState<number | null>(null);
 
   return (
     <div>

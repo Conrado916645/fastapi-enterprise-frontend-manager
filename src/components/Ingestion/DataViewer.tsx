@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { IngestionService } from "../../api/services";
 
-export default function DataViewer({ sourceId, onClose }) {
-  const [data, setData] = useState([]);
+type CleanedRow = {
+  id: number;
+  external_id: string;
+  data: Record<string, unknown>;
+};
+
+export default function DataViewer({ sourceId, onClose }: { sourceId: number; onClose: () => void }) {
+  const [data, setData] = useState<CleanedRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +57,7 @@ export default function DataViewer({ sourceId, onClose }) {
                     <td key={col} className="px-4 py-2 text-sm dark:text-white">
                       {typeof row.data[col] === "object"
                         ? JSON.stringify(row.data[col])
-                        : row.data[col]}
+                        : String(row.data[col] ?? "")}
                     </td>
                   ))}
                 </tr>

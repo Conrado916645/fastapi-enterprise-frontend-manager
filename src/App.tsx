@@ -1,26 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Import Layout & Pages
+// Eager: the layout, the landing page (login) and tiny status pages.
 import DashboardLayout from "./layouts/DashboardLayout";
 import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
-import UserList from "./pages/UserList";
-import Register from "./pages/Register";
-import EditUser from "./pages/EditUser";
-import GroupList from "./pages/GroupList";
 import NotFound from "./NotFound";
 import Unauthorized from "./pages/Unauthorized";
 import PendingApproval from "./pages/PendingApproval";
 import BackendOffline from "./pages/BackendOffline";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import VerifyEmail from "./pages/VerifyEmail";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings/index";
+
+// Lazy: each page becomes its own chunk, fetched on first visit, so the
+// login screen doesn't download the whole admin app up front.
+const SignUp = lazy(() => import("./pages/SignUp"));
+const Home = lazy(() => import("./pages/Home"));
+const UserList = lazy(() => import("./pages/UserList"));
+const Register = lazy(() => import("./pages/Register"));
+const EditUser = lazy(() => import("./pages/EditUser"));
+const GroupList = lazy(() => import("./pages/GroupList"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Settings = lazy(() => import("./pages/Settings/index"));
+
+const PageFallback = () => (
+  <div className="p-10 text-center text-slate-500 animate-pulse">Loading...</div>
+);
 
 // Import the Modal
 import ChangePasswordModal from "./components/ChangePasswordModel";
@@ -48,7 +55,11 @@ export default function App() {
       root.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+  }, [isDarkMode]);
 
+  // Registered once — previously these were torn down and re-added on every
+  // theme toggle because they shared the theme effect.
+  useEffect(() => {
     // Listener for the global "Password Change" event
     const handleEvent = () => setShowModal(true);
     window.addEventListener("REQUIRE_PASSWORD_CHANGE", handleEvent);
@@ -62,7 +73,7 @@ export default function App() {
       window.removeEventListener("REQUIRE_PASSWORD_CHANGE", handleEvent);
       window.removeEventListener("BACKEND_OFFLINE", handleOffline);
     };
-  }, [isDarkMode]);
+  }, []);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
@@ -79,6 +90,7 @@ export default function App() {
       {showModal && <ChangePasswordModal onClose={() => setShowModal(false)} />}
 
       <BrowserRouter>
+        <Suspense fallback={<PageFallback />}>
         <Routes>
           {/* Public Route */}
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -177,6 +189,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+        </Suspense>
         <ToastContainer
           position="top-right"
           autoClose={3000}

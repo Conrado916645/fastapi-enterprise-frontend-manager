@@ -41,6 +41,16 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // FastAPI validation errors (422) send `detail` as an array of objects.
+    // Components render `detail` directly as text, and React throws on an
+    // object child — flatten it into one readable string for every caller.
+    const detail = error.response?.data?.detail;
+    if (Array.isArray(detail)) {
+      error.response.data.detail = detail
+        .map((d: any) => String(d?.msg ?? d).replace(/^Value error, /, ''))
+        .join(' ');
+    }
+
     // 0. Network error — the request went out but no response came back at
     // all (server down, connection refused, DNS failure, timeout, etc). This
     // is what a crashed/unreachable backend looks like to axios; a 500 or a

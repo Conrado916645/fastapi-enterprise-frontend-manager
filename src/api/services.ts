@@ -26,7 +26,6 @@ export const AuthService = {
   // Inside your AuthService
 verifyMfa: async (payload: { mfa_token: string; code: string }) => {
   const response = await apiClient.post(ENDPOINTS.auth.mfaVerify, payload);
-  console.log(payload)
   if (response.data.access_token) {
     localStorage.setItem('access_token', response.data.access_token);
     localStorage.setItem('refresh_token', response.data.refresh_token);
@@ -137,11 +136,6 @@ export const UserService = {
   },
   getMe: async () => {
     const response = await apiClient.get(ENDPOINTS.users.me);
-    return response.data;
-  },
-
-  setupMfa: async () => {
-    const response = await apiClient.post('/users/me/mfa/setup');
     return response.data;
   },
 
@@ -276,12 +270,13 @@ export const EmailSettingsService = {
     return response.data;
   },
 
-  updateSettings: async (payload) => {
-    const response = await apiClient.put(ENDPOINTS.system.emailSettings, payload);
+  // FIX: the backend route is PATCH — PUT returned 405 so saving never worked.
+  updateSettings: async (payload: Record<string, unknown>) => {
+    const response = await apiClient.patch(ENDPOINTS.system.emailSettings, payload);
     return response.data;
   },
 
-  sendTestEmail: async (to_email) => {
+  sendTestEmail: async (to_email: string) => {
     await apiClient.post(ENDPOINTS.system.emailTest, { to_email });
   }
 };

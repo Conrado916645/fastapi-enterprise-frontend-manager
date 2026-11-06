@@ -3,10 +3,18 @@ import { toast } from "react-toastify";
 import { IngestionService } from "../../api/services";
 import SourceForm from "./SourceForm";
 
-export default function SourceList({ onViewData }) {
-  const [sources, setSources] = useState([]);
+type Source = {
+  id: number;
+  name: string;
+  endpoint: string;
+  method: string;
+  [key: string]: any;
+};
+
+export default function SourceList({ onViewData }: { onViewData: (id: number) => void }) {
+  const [sources, setSources] = useState<Source[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingSource, setEditingSource] = useState(null);
+  const [editingSource, setEditingSource] = useState<Source | null>(null);
 
 const fetchSources = async () => {
   try {
@@ -23,7 +31,7 @@ const fetchSources = async () => {
     fetchSources();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
     try {
       await IngestionService.deleteSource(id);
       fetchSources();
@@ -33,16 +41,16 @@ const fetchSources = async () => {
     }
   };
 
-  const handleTrigger = async (id) => {
+  const handleTrigger = async (id: number) => {
     try {
       await IngestionService.triggerIngestion(id);
       toast.success("Ingestion triggered.");
-    } catch (err) {
-      toast.error("Trigger failed.");
+    } catch (err: any) {
+      toast.error(err.response?.data?.detail || "Trigger failed.");
     }
   };
 
-  const openEdit = (source) => {
+  const openEdit = (source: Source) => {
     setEditingSource(source);
     setShowForm(true);
   };

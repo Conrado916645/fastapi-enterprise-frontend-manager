@@ -23,10 +23,17 @@ export default function ChangePasswordModal({
 
     setLoading(true);
     try {
-      await apiClient.post("/users/me/change-password", {
+      const { data } = await apiClient.post("/users/me/change-password", {
         old_password: oldPassword,
         new_password: newPassword,
       });
+
+      // Changing the password revokes every earlier token (signing out other
+      // devices); the response carries a fresh pair for this session.
+      if (data?.access_token) {
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("refresh_token", data.refresh_token);
+      }
 
       notify.success("Password updated successfully!");
       onClose();

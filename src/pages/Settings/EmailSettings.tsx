@@ -51,8 +51,9 @@ export default function EmailSettings() {
     e.preventDefault();
     setLoading(true);
     try {
-      const payload = { ...settings };
-      if (!payload.smtp_password) delete payload.smtp_password;
+      // Omit an empty password so the stored one is kept.
+      const { smtp_password, ...rest } = settings;
+      const payload = smtp_password ? { ...rest, smtp_password } : rest;
       await EmailSettingsService.updateSettings(payload);
       toast.success("Email settings updated.");
     } catch (err: any) {

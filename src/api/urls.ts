@@ -1,5 +1,7 @@
-// Base URL for your backend server
-export const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+// Base URL for the backend. Set VITE_API_BASE_URL in .env / .env.production
+// per environment; the fallback keeps local dev working with no config.
+export const API_BASE_URL: string =
+  import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
 
 // Dictionary of all available API endpoints
 export const ENDPOINTS = {
@@ -50,11 +52,11 @@ export const ENDPOINTS = {
     generalSettings: '/system/general-settings',
   },
   ingestion: {
-  sources: '/sources/',
-  sourceDetail: (id) => `/sources/${id}`,
-  trigger: (id) => `/ingestion/trigger/${id}`,
-  data: (sourceId) => `/data/${sourceId}`,
-},
+    sources: '/sources/',
+    sourceDetail: (id: string | number) => `/sources/${id}`,
+    trigger: (id: string | number) => `/ingestion/trigger/${id}`,
+    data: (sourceId: string | number) => `/data/${sourceId}`,
+  },
   groups: {
     list: '/groups',
     create: '/groups',

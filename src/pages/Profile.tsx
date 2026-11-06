@@ -18,7 +18,6 @@ import { UserService } from "../api/services";
 import ChangePasswordModal from "../components/ChangePasswordModel";
 import EditProfileModal from "../components/EditProfileModal";
 import TOTPMFAModel from "../components/TOTPMFAModel"; 
-import { notify } from "../utils/toast";
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Edit2, Lock as LockIcon, RefreshCw } from 'lucide-react';
-import { SystemService, UserService } from '../api/services';
+import { SystemService } from '../api/services';
 import { useAuth } from '../context/AuthContext';
 
 type ApiUser = {
@@ -23,7 +23,6 @@ export default function UserList() {
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [userToDelete, setUserToDelete] = useState<{ id: string; username: string } | null>(null);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -40,13 +39,6 @@ export default function UserList() {
   useEffect(() => {
     loadUsers();
   }, []);
-
-  const confirmDelete = async () => {
-    if (userToDelete) {
-      setUsers(users.filter(u => u.id !== userToDelete.id));
-      setUserToDelete(null);
-    }
-  };
 
   const filteredUsers = users.filter(user => 
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
