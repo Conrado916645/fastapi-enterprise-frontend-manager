@@ -152,7 +152,7 @@ export const UserService = {
   updateProfile: async (payload: {
     email: string;
     full_name: string;
-    date_of_birth: string;
+    date_of_birth: string | null;
     phone_number: string;
   }) => {
     const response = await apiClient.patch(ENDPOINTS.users.me, payload);
@@ -329,6 +329,12 @@ export const GroupService = {
     const response = await apiClient.delete(ENDPOINTS.groups.delete(groupId));
     return response.data;
   },
+  // Minimal user list for membership management (needs groups:update only).
+  getDirectory: async () => {
+    const response = await apiClient.get(ENDPOINTS.groups.directory);
+    return response.data;
+  },
+
   addMembers: async (groupId: string | number, userIds: string[]) => {
     const response = await apiClient.post(ENDPOINTS.groups.addMembers(groupId), { user_ids: userIds });
     return response.data;

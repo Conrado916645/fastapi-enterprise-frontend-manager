@@ -130,6 +130,11 @@ export default function EditUser() {
 
         setAvailableApps(apps);
 
+        // FIX: the fetched user was never stored, so opening this page by URL
+        // (or refreshing it) rendered nothing — `user` only came from the
+        // previous page's navigation state.
+        if (userData) setUser(userData);
+
         const userPerms =
           userData?.permissions?.installed_apps || // If wrapped in installed_apps
           userData?.permissions || // If direct dictionary (Most likely!)
@@ -164,17 +169,25 @@ export default function EditUser() {
 
     try {
       switch (modalType) {
-        case "apikey":
+        case "apikey": {
+          // Second click ("Done") just closes — previously it generated a
+          // new key, silently invalidating the one on screen.
+          if (generatedKey) {
+            setGeneratedKey("");
+            setModalType(null);
+            break;
+          }
           const data = await GenerateApiKeyService.generateApiKey(user.id);
           if (data && data.api_key) setGeneratedKey(data.api_key);
           else if (typeof data === "string") setGeneratedKey(data);
           else setGeneratedKey(JSON.stringify(data));
           // Note: We don't close the modal here so the user can copy the key
           break;
+        }
 
         case "delete":
           await SystemService.deleteUser(id!);
-          notify.success("User permanently deleted.");
+          notify.success("User account deleted.");
           navigate("/users");
           break;
 
@@ -184,15 +197,17 @@ export default function EditUser() {
           setModalType(null);
           break;
 
-        case "permissions":
-          const updatePayload = {
+        case "permissions": {
+          const updated = await SystemService.updateUser(user.id, {
             is_active: active,
             permissions: permissions,
-          };
-          await SystemService.updateUser(user.id, updatePayload);
+          });
+          // Keep the audit rail in sync with what was just saved.
+          if (updated) setUser(updated);
           notify.success("Settings updated successfully");
           setModalType(null);
           break;
+        }
 
         case "unlock":
           try {
@@ -223,7 +238,8 @@ export default function EditUser() {
     }
   };
 
-  const formatDate = (date: string) => new Date(date).toLocaleString();
+  // Null-safe: new Date(null) renders as 1/1/1970.
+  const formatDate = (date?: string | null) => (date ? new Date(date).toLocaleString() : "Never");
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">

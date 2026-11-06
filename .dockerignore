@@ -3,3 +3,13 @@ dist
 dist-ssr
 .git
 *.log
+
+# Local env files must not leak into the image: the API URL comes from the
+# VITE_API_BASE_URL build arg instead (Vite would otherwise read .env files).
+.env
+.env.*
+!.env.example
+
+Dockerfile
+.dockerignore
+README.md

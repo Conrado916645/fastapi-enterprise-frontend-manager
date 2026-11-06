@@ -39,7 +39,8 @@ export default function EditProfileModal({
       // instead of just YYYY-MM-DD, we format it before sending:
       const payload = {
         ...formData,
-        date_of_birth: formData.date_of_birth ? new Date(formData.date_of_birth).toISOString() : ''
+        // null (not "") when cleared — an empty string fails backend validation.
+        date_of_birth: formData.date_of_birth ? new Date(formData.date_of_birth).toISOString() : null
       };
 
       await UserService.updateProfile(payload);

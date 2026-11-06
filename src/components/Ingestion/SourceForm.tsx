@@ -9,6 +9,8 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
     method: "GET",
     auth_type: "",
     auth_credentials_env: "",
+    auth_password_env: "",
+    auth_header_name: "",
     headers: [] as { key: string; value: string }[],
     pagination_type: "",
     pagination_config_json: "{}",
@@ -32,7 +34,10 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
         endpoint: source.endpoint || "",
         method: source.method || "GET",
         auth_type: source.auth_type || "",
-        auth_credentials_env: source.auth_credentials?.token_env || "",
+        auth_credentials_env:
+          source.auth_credentials?.token_env || source.auth_credentials?.username_env || "",
+        auth_password_env: source.auth_credentials?.password_env || "",
+        auth_header_name: source.auth_credentials?.header_name || "",
         headers: headersArray,
         pagination_type: source.pagination_type || "",
         pagination_config_json: source.pagination_config
@@ -51,7 +56,7 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
     setForm((prev) => {
       // Clear auth credentials when auth type is set to none
       if (name === "auth_type" && (value === "" || value === "none")) {
-        return { ...prev, auth_type: "", auth_credentials_env: "" };
+        return { ...prev, auth_type: "", auth_credentials_env: "", auth_password_env: "", auth_header_name: "" };
       }
       return { ...prev, [name]: value };
     });
@@ -117,14 +122,23 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
     };
 
     // Handle auth_credentials
-    if (form.auth_type === "bearer" || form.auth_type === "api_key") {
+    // Only env var NAMES are stored; the backend reads the secrets from its environment.
+    if (form.auth_type === "bearer") {
       payload.auth_credentials = { token_env: form.auth_credentials_env };
+    } else if (form.auth_type === "api_key") {
+      payload.auth_credentials = {
+        token_env: form.auth_credentials_env,
+        header_name: form.auth_header_name || "X-API-Key",
+      };
     } else if (form.auth_type === "basic") {
-      payload.auth_credentials = { username_env: "", password_env: "" };
+      // FIX: previously always sent empty env names, so basic auth never worked.
+      payload.auth_credentials = {
+        username_env: form.auth_credentials_env,
+        password_env: form.auth_password_env,
+      };
+    } else {
+      payload.auth_credentials = null;
     }
-
-    // Debug: log the exact payload being sent
-    console.log("Submitting payload:", payload);
 
     try {
       if (source) {
@@ -221,6 +235,30 @@ export default function SourceForm({ source, onClose, onSaved }: any) {
                   <p className="text-xs text-slate-500 mt-1">
                     Environment variable name where the secret is stored.
                   </p>
+                </div>
+              )}
+              {form.auth_type === "basic" && (
+                <div>
+                  <label className="block text-sm text-slate-600 dark:text-slate-400">Password Env Var</label>
+                  <input
+                    name="auth_password_env"
+                    value={form.auth_password_env}
+                    onChange={handleChange}
+                    placeholder="e.g., VENDOR_API_PASSWORD"
+                    className="w-full px-3 py-2 border rounded-md dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                  />
+                </div>
+              )}
+              {form.auth_type === "api_key" && (
+                <div>
+                  <label className="block text-sm text-slate-600 dark:text-slate-400">Header Name</label>
+                  <input
+                    name="auth_header_name"
+                    value={form.auth_header_name}
+                    onChange={handleChange}
+                    placeholder="X-API-Key"
+                    className="w-full px-3 py-2 border rounded-md dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                  />
                 </div>
               )}
             </div>

@@ -87,8 +87,9 @@ export default function GeneralSettings() {
         />
         <p className="text-xs text-slate-500 mt-1">
           Comma-separated. These are the only origins the API will accept browser requests
-          from (CORS). Leave blank to allow any origin — fine for local dev, not recommended
-          once this is reachable from the internet.
+          from (CORS). Leave blank to fall back to the <code>DOMAIN</code> value in the
+          server's <code>.env</code>. Use <code>*</code> to allow any origin — fine for local dev,
+          not recommended once this is reachable from the internet.
         </p>
       </div>
 

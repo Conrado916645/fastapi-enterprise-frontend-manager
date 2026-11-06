@@ -63,6 +63,7 @@ export const ENDPOINTS = {
     detail: (id: string | number) => `/groups/${id}`,
     update: (id: string | number) => `/groups/${id}`,
     delete: (id: string | number) => `/groups/${id}`,
+    directory: '/groups/directory',
     addMembers: (id: string | number) => `/groups/${id}/members`,
     removeMember: (id: string | number, userId: string | number) => `/groups/${id}/members/${userId}`,
   },

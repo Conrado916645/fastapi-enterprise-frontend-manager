@@ -68,7 +68,9 @@ export default function Profile() {
 
   const formatDate = (date: string) => new Date(date).toLocaleString();
   const formatDOB = (date: string) => new Date(date).toLocaleDateString(); 
-  const permissions = user.permissions?.installed_apps || user.permissions || {};
+  // Effective = direct permissions + everything inherited from groups.
+  const permissions = user.effective_permissions || user.permissions || {};
+  const groupNames: string[] = user.group_names || [];
 
   const getInitials = () => {
     if (user.full_name) {
@@ -245,6 +247,12 @@ export default function Profile() {
             <h3 className="font-bold flex items-center gap-2 dark:text-white mb-6">
               <Shield size={20} className="text-emerald-500" /> My Permissions
             </h3>
+
+            <p className="text-xs text-slate-500 mb-4 -mt-3">
+              {groupNames.length > 0
+                ? `Includes permissions inherited from: ${groupNames.join(", ")}.`
+                : "You aren't in any group — these are your direct permissions."}
+            </p>
 
             {Object.keys(permissions).length === 0 ? (
               <p className="text-slate-500 text-sm italic">

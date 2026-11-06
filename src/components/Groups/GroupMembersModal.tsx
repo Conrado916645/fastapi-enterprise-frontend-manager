@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { X, Search, Loader2, UserMinus, UserPlus } from "lucide-react";
-import { GroupService, SystemService } from "../../api/services";
+import { GroupService } from "../../api/services";
 import { notify } from "../../utils/toast";
 
 type ApiUser = {
@@ -25,7 +25,7 @@ export default function GroupMembersModal({ group, onClose, onChanged }: GroupMe
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const data = await SystemService.getUserList();
+      const data = await GroupService.getDirectory();
       setUsers(data || []);
     } catch (err) {
       notify.error("Failed to load users.");

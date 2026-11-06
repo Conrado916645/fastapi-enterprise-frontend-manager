@@ -17,6 +17,7 @@ export default function TOTPMFAModel({
   
   // Setup State
   const [secretKey, setSecretKey] = useState<string>('');
+  const [qrCode, setQrCode] = useState<string>('');
   const [verificationCode, setVerificationCode] = useState('');
   const [isFetching, setIsFetching] = useState(mode === 'setup');
   const [copied, setCopied] = useState(false);
@@ -32,6 +33,7 @@ export default function TOTPMFAModel({
       try {
         const response = await UserService.getKey2FA();
         setSecretKey(response.secret);
+        setQrCode(response.qr_code || '');
       } catch (err: any) {
         console.error("Failed to initialize MFA setup:", err);
         setError("Failed to generate MFA credentials.");
@@ -124,7 +126,16 @@ export default function TOTPMFAModel({
               <div className="flex justify-center py-12"><Loader2 className="animate-spin text-blue-600" size={40} /></div>
             ) : (
               <div className="space-y-6">
-                <p className="text-sm text-slate-600 dark:text-slate-300">Enter this secret key into your authenticator app:</p>
+                {qrCode && (
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-sm text-slate-600 dark:text-slate-300">Scan this QR code with your authenticator app:</p>
+                    {/* White backing so the code stays scannable in dark mode */}
+                    <img src={qrCode} alt="TOTP QR code" className="w-44 h-44 bg-white p-2 rounded-lg" />
+                  </div>
+                )}
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  {qrCode ? "Or enter this key manually:" : "Enter this secret key into your authenticator app:"}
+                </p>
                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border dark:border-slate-700">
                   <code className="text-sm font-bold tracking-widest dark:text-white">{secretKey}</code>
                   <button onClick={copyToClipboard} className="text-slate-400 hover:text-blue-600">
