@@ -63,6 +63,13 @@ src/
 - Changing a password revokes all earlier tokens server-side; the change-password response carries a fresh pair, which the modal stores.
 - A 403 `PASSWORD_CHANGE_REQUIRED` opens the global change-password modal; a network failure shows the "backend offline" screen.
 
+## Error Pages and Maintenance
+
+- One component, `src/components/ErrorPage.tsx`, renders every error screen: **400, 401, 403, 404, 408, 429, 500, 502, 503, 504** and "offline". Linkable at `/error/<code>` (e.g. for a reverse proxy's `error_page`); unknown URLs show the full-page 404.
+- **Server unreachable / 502 / 503 / 504** → `BackendOffline` checks the backend's `/healthz` every 10 s and recovers automatically.
+- **Render crash** (a bug, or a stale lazy chunk after a deploy) → `ErrorBoundary` shows the 500 page instead of a blank screen.
+- **Maintenance mode** (backend Settings → Maintenance) → non-admins see `pages/Maintenance.tsx`, which polls the status and reloads when the system is back; admins keep working and see a banner. `/login` stays reachable so an admin can sign in.
+
 ## Adding a Page
 
 1. Add its endpoints to `src/api/urls.ts` and a service object in `src/api/services.ts`.

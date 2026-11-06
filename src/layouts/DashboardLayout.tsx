@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -9,8 +9,10 @@ import {
   Sun,
   Moon,
   Server,
+  Wrench,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useMaintenance } from '../context/maintenance';
 
 interface LayoutProps {
   isDarkMode: boolean;
@@ -20,6 +22,7 @@ interface LayoutProps {
 export default function DashboardLayout({ isDarkMode, toggleTheme }: LayoutProps) {
   const navigate = useNavigate();
   const { hasPermission, clearCurrentUser, appName } = useAuth();
+  const { status: maintenance } = useMaintenance();
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -87,6 +90,20 @@ export default function DashboardLayout({ isDarkMode, toggleTheme }: LayoutProps
 
       {/* Main Content Area (Pages get injected here) */}
       <main className="flex-1 h-screen overflow-y-auto p-8">
+        {/* Only admins can be in here during maintenance — remind them it's on. */}
+        {maintenance?.enabled && (
+          <div className="mb-6 flex flex-wrap items-center gap-3 p-3 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-800 dark:text-amber-300">
+            <Wrench size={18} className="shrink-0" />
+            <span className="flex-1">
+              <strong>Maintenance mode is ON.</strong> Only administrators can use the system right now.
+            </span>
+            {hasPermission('system', 'update') && (
+              <Link to="/settings?tab=maintenance" className="font-semibold underline hover:no-underline">
+                Manage
+              </Link>
+            )}
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

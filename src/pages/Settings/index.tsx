@@ -1,14 +1,18 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import GeneralSettings from "./GeneralSettings";
 import EmailSettings from "./EmailSettings";
 import AISettings from "./AISettings";
 import RegistrationSettings from "./RegistrationSettings";
 import CaptchaSettings from "./CaptchaSettings";
+import MaintenanceSettings from "./MaintenanceSettings";
 import SourceList from "../../components/Ingestion/SourceList";
 import DataViewer from "../../components/Ingestion/DataViewer";
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("general");
+  // ?tab=<name> deep-links to a tab (e.g. the maintenance banner links to ?tab=maintenance).
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "general");
   const [viewSourceId, setViewSourceId] = useState<number | null>(null);
 
   return (
@@ -78,6 +82,16 @@ export default function Settings() {
           >
             Captcha
           </button>
+          <button
+            onClick={() => setActiveTab("maintenance")}
+            className={`py-2 px-4 text-sm font-medium border-b-2 ${
+              activeTab === "maintenance"
+                ? "border-amber-500 text-amber-600 dark:text-amber-400"
+                : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400"
+            }`}
+          >
+            Maintenance
+          </button>
         </nav>
       </div>
 
@@ -88,6 +102,7 @@ export default function Settings() {
         {activeTab === "ai" && <AISettings />}
         {activeTab === "registration" && <RegistrationSettings />}
         {activeTab === "captcha" && <CaptchaSettings />}
+        {activeTab === "maintenance" && <MaintenanceSettings />}
         {activeTab === "ingestion" && (
           <div className="h-full">
             <SourceList onViewData={setViewSourceId} />

@@ -378,3 +378,34 @@ export const IngestionService = {
     return response.data; // ← returns the cleaned data array
   },
 };
+
+// ---- Maintenance mode ------------------------------------------------------
+export type MaintenanceStatus = {
+  enabled: boolean;
+  message: string | null;
+  ends_at: string | null;
+};
+
+export type MaintenanceSettings = {
+  is_enabled: boolean;      // the Settings toggle
+  forced_by_env: boolean;   // MAINTENANCE_MODE=true on the server (can't be turned off here)
+  active: boolean;          // effective state
+  message: string | null;
+  ends_at: string | null;
+  updated_at: string | null;
+  updated_by: string | null;
+};
+
+export const MaintenanceService = {
+  // Public — works signed out and during maintenance.
+  getStatus: async (): Promise<MaintenanceStatus> =>
+    (await apiClient.get(ENDPOINTS.auth.maintenanceStatus)).data,
+  getSettings: async (): Promise<MaintenanceSettings> =>
+    (await apiClient.get(ENDPOINTS.system.maintenanceSettings)).data,
+  updateSettings: async (payload: {
+    is_enabled: boolean;
+    message: string | null;
+    ends_at: string | null;
+  }): Promise<MaintenanceSettings> =>
+    (await apiClient.patch(ENDPOINTS.system.maintenanceSettings, payload)).data,
+};

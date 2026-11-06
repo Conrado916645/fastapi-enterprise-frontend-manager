@@ -1,19 +1,62 @@
-import { ServerOff, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import ErrorPage from "../components/ErrorPage";
+import { API_BASE_URL } from "../api/urls";
 
-export default function BackendOffline({ onRetry }: { onRetry: () => void }) {
+const CHECK_EVERY_SECONDS = 10;
+
+// /healthz lives at the API's origin root (outside /api/v1) and needs no auth.
+const HEALTH_URL = `${API_BASE_URL.replace(/\/api\/v\d+\/?$/, "")}/healthz`;
+
+interface BackendOfflineProps {
+  /** HTTP status that triggered this screen (502/503/504), or none for a network failure. */
+  status?: number;
+  onRecovered: () => void;
+}
+
+/**
+ * Shown when the API can't be reached (network error) or a gateway reports
+ * it down (502/503/504). Pings /healthz every few seconds and recovers on
+ * its own as soon as the server answers — no need for the user to refresh.
+ */
+export default function BackendOffline({ status, onRecovered }: BackendOfflineProps) {
+  const [secondsLeft, setSecondsLeft] = useState(CHECK_EVERY_SECONDS);
+  const [checking, setChecking] = useState(false);
+
+  const checkNow = useCallback(async () => {
+    setChecking(true);
+    try {
+      const res = await fetch(HEALTH_URL, { cache: "no-store" });
+      if (res.ok) {
+        onRecovered();
+        return;
+      }
+    } catch {
+      // still down
+    } finally {
+      setChecking(false);
+      setSecondsLeft(CHECK_EVERY_SECONDS);
+    }
+  }, [onRecovered]);
+
+  // Two timers: the health check itself, and a 1s tick for the countdown
+  // text. (Calling checkNow from inside a state updater would be a side
+  // effect — StrictMode runs updaters twice.)
+  useEffect(() => {
+    const check = window.setInterval(checkNow, CHECK_EVERY_SECONDS * 1000);
+    const tick = window.setInterval(() => setSecondsLeft((s) => (s > 1 ? s - 1 : CHECK_EVERY_SECONDS)), 1000);
+    return () => {
+      window.clearInterval(check);
+      window.clearInterval(tick);
+    };
+  }, [checkNow]);
+
+  const code = status === 502 || status === 503 || status === 504 ? status : "offline";
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center gap-4 p-8 bg-slate-50 dark:bg-slate-950">
-      <ServerOff size={48} className="text-red-500" />
-      <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Can't Reach the Server</h1>
-      <p className="text-slate-500 max-w-sm">
-        The backend API isn't responding. It may be restarting or temporarily offline — please try again in a moment.
+    <ErrorPage code={code} onRetry={checkNow}>
+      <p className="text-xs text-slate-400">
+        {checking ? "Checking..." : `Checking again in ${secondsLeft}s`}
       </p>
-      <button
-        onClick={onRetry}
-        className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors"
-      >
-        <RefreshCw size={18} /> Retry
-      </button>
-    </div>
+    </ErrorPage>
   );
 }

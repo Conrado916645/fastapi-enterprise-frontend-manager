@@ -10,6 +10,10 @@ import NotFound from "./NotFound";
 import Unauthorized from "./pages/Unauthorized";
 import PendingApproval from "./pages/PendingApproval";
 import BackendOffline from "./pages/BackendOffline";
+import ErrorRoute from "./pages/ErrorRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
+import MaintenanceGate from "./components/MaintenanceGate";
+import { MaintenanceProvider } from "./context/MaintenanceProvider";
 
 // Lazy: each page becomes its own chunk, fetched on first visit, so the
 // login screen doesn't download the whole admin app up front.
@@ -37,7 +41,9 @@ import { AuthProvider } from "./context/AuthContext";
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
-  const [backendOffline, setBackendOffline] = useState(false);
+  // Set when the API is unreachable (status undefined) or a gateway reports
+  // it down (502/503/504) — see the axios interceptor in api/client.ts.
+  const [outage, setOutage] = useState<{ status?: number } | null>(null);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
@@ -65,8 +71,9 @@ export default function App() {
     window.addEventListener("REQUIRE_PASSWORD_CHANGE", handleEvent);
 
     // Listener for the global "Backend Unreachable" event (dispatched by the
-    // axios interceptor whenever a request gets no response at all)
-    const handleOffline = () => setBackendOffline(true);
+    // axios interceptor on a network failure or a 502/503/504)
+    const handleOffline = (e: Event) =>
+      setOutage({ status: (e as CustomEvent<{ status?: number }>).detail?.status });
     window.addEventListener("BACKEND_OFFLINE", handleOffline);
 
     return () => {
@@ -77,11 +84,8 @@ export default function App() {
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-  if (backendOffline) {
-    return <BackendOffline onRetry={() => window.location.reload()} />;
-  }
-
   return (
+    <MaintenanceProvider>
     <AuthProvider>
       {/* Injecting the Modal globally.
         It will sit on top of the Router content
@@ -90,6 +94,12 @@ export default function App() {
       {showModal && <ChangePasswordModal onClose={() => setShowModal(false)} />}
 
       <BrowserRouter>
+        <ErrorBoundary>
+        {outage ? (
+          // Recovered → reload so every page refetches its data.
+          <BackendOffline status={outage.status} onRecovered={() => window.location.reload()} />
+        ) : (
+        <MaintenanceGate>
         <Suspense fallback={<PageFallback />}>
         <Routes>
           {/* Public Route */}
@@ -120,6 +130,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/error/:code" element={<ErrorRoute />} />
 
           {/* Protected Routes */}
           <Route
@@ -186,10 +197,16 @@ export default function App() {
                 </RequirePermission>
               }
             />
-            <Route path="*" element={<NotFound />} />
           </Route>
+
+          {/* 404 — full page (outside the dashboard layout, so signed-out
+              visitors don't get a sidebar). */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
+        </MaintenanceGate>
+        )}
+        </ErrorBoundary>
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -202,5 +219,6 @@ export default function App() {
         />
       </BrowserRouter>
     </AuthProvider>
+    </MaintenanceProvider>
   );
 }

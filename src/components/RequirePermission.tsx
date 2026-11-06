@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { Link, Navigate } from "react-router-dom";
-import { ShieldAlert } from "lucide-react";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ErrorPage from "./ErrorPage";
 
 interface RequirePermissionProps {
   module: string;
@@ -34,19 +34,19 @@ export default function RequirePermission({ module, action, children }: RequireP
   }
 
   if (!hasPermission(module, action)) {
+    // 403, embedded in the dashboard layout (sidebar stays visible).
     return (
-      <div className="flex flex-col items-center justify-center text-center gap-3 py-24">
-        <ShieldAlert size={40} className="text-red-500" />
-        <h1 className="text-xl font-bold dark:text-white">Access Denied</h1>
-        <p className="text-slate-500 text-sm max-w-sm">
-          You need the <code className="font-mono">{action}</code> permission on{" "}
-          <code className="font-mono">{module}</code> to view this page. Ask an
-          admin to add you to a group that grants it.
-        </p>
-        <Link to="/home" className="text-blue-600 hover:underline text-sm font-medium">
-          Back to Dashboard
-        </Link>
-      </div>
+      <ErrorPage
+        code={403}
+        fullScreen={false}
+        message={
+          <>
+            You need the <code className="font-mono">{action}</code> permission on{" "}
+            <code className="font-mono">{module}</code> to view this page. Ask an admin to add you to a group that
+            grants it.
+          </>
+        }
+      />
     );
   }
 

@@ -57,7 +57,26 @@ apiClient.interceptors.response.use(
     // CORS-blocked response due to a server-side error is NOT this — those
     // still have error.response and fall through to the checks below.
     if (!error.response && error.request) {
-      window.dispatchEvent(new CustomEvent('BACKEND_OFFLINE'));
+      window.dispatchEvent(new CustomEvent('BACKEND_OFFLINE', { detail: { status: undefined } }));
+      return Promise.reject(error);
+    }
+
+    const status: number | undefined = error.response?.status;
+
+    // 0b. Maintenance mode — the API is deliberately closed to non-admins.
+    // Tell the app (it shows the maintenance page) and replace the machine
+    // code with a readable message for any component that displays `detail`.
+    if (status === 503 && error.response?.data?.detail === 'MAINTENANCE_MODE') {
+      window.dispatchEvent(new CustomEvent('MAINTENANCE_MODE'));
+      error.response.data.detail =
+        error.response.data.message ||
+        'The system is under maintenance. Only administrators can sign in right now.';
+      return Promise.reject(error);
+    }
+
+    // 0c. A gateway/proxy says the backend is down or overloaded.
+    if (status === 502 || status === 503 || status === 504) {
+      window.dispatchEvent(new CustomEvent('BACKEND_OFFLINE', { detail: { status } }));
       return Promise.reject(error);
     }
 

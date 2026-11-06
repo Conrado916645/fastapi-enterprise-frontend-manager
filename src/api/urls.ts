@@ -14,6 +14,7 @@ export const ENDPOINTS = {
     refreshToken: '/auth/refresh',
     mfaVerify: '/auth/login/mfa-verify',
     appInfo: '/auth/app-info',
+    maintenanceStatus: '/auth/maintenance-status',
     emailStatus: '/auth/email-status'
   },
   users: {
@@ -50,6 +51,7 @@ export const ENDPOINTS = {
     registrationSettings: '/system/registration-settings',
     captchaSettings: '/system/captcha-settings',
     generalSettings: '/system/general-settings',
+    maintenanceSettings: '/system/maintenance-settings',
   },
   ingestion: {
     sources: '/sources/',
